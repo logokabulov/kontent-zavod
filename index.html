@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0A0A0B"/>
+<title>Kontent Zavod</title>
+<link rel="manifest" href="/manifest.json"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root[data-theme="dark"]{--bg:#0A0A0B;--bg2:#111113;--sb:#111113;--sur:#1A1A1D;--sur2:#222226;--sur3:#2A2A2F;--sur4:#333338;--sep:rgba(255,255,255,.07);--sep2:rgba(255,255,255,.12);--tx:#F5F5F7;--tx2:rgba(245,245,247,.55);--tx3:rgba(245,245,247,.28);--pr:#CC785C;--prl:#D4896B;--prd:rgba(204,120,92,.15);--te:#2DD4BF;--ted:rgba(45,212,191,.13);--gr:#34C759;--grd:rgba(52,199,89,.12);--or:#FF9500;--ord:rgba(255,149,0,.12);--rd:#FF453A;--rdd:rgba(255,69,58,.12);--bl:#0A84FF;--bld:rgba(10,132,255,.12);--sh:0 2px 12px rgba(0,0,0,.4);--sh2:0 8px 32px rgba(0,0,0,.6);--sh3:0 20px 60px rgba(0,0,0,.8)}
+:root[data-theme="light"]{--bg:#F2F2F7;--bg2:#E5E5EA;--sb:#fff;--sur:#fff;--sur2:#F2F2F7;--sur3:#E5E5EA;--sur4:#D1D1D6;--sep:rgba(0,0,0,.08);--sep2:rgba(0,0,0,.14);--tx:#1A1A1E;--tx2:rgba(26,26,30,.55);--tx3:rgba(26,26,30,.28);--pr:#CC785C;--prl:#B86A4E;--prd:rgba(204,120,92,.12);--te:#0D9488;--ted:rgba(13,148,136,.1);--gr:#34C759;--grd:rgba(52,199,89,.1);--or:#FF9500;--ord:rgba(255,149,0,.1);--rd:#FF3B30;--rdd:rgba(255,59,48,.08);--bl:#007AFF;--bld:rgba(0,122,255,.1);--sh:0 1px 6px rgba(0,0,0,.07);--sh2:0 4px 20px rgba(0,0,0,.09);--sh3:0 16px 48px rgba(0,0,0,.12)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+@supports (-webkit-touch-callout:none){.content{-webkit-overflow-scrolling:touch}.chat-msgs{-webkit-overflow-scrolling:touch}}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--sur4);border-radius:2px}
+.app{display:flex;height:100vh;overflow:hidden}
+/* SIDEBAR */
+.sb{width:220px;flex-shrink:0;background:rgba(17,17,19,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:.5px solid var(--sep);display:flex;flex-direction:column}
+.sb-top{padding:14px 12px;border-bottom:.5px solid var(--sep)}
+.logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+.logo-m{width:28px;height:28px;background:linear-gradient(135deg,var(--pr),var(--te));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sb-nav{flex:1;overflow-y:auto;padding:6px 0}
+.nav-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);padding:8px 14px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 12px;margin:1px 6px;border-radius:8px;cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;overflow:hidden;border:none;background:none;width:calc(100% - 12px);text-align:left;font-family:inherit}
+.ni:hover{background:var(--sur2);color:var(--tx)}.ni.on{background:var(--prd);color:var(--pr)}
+.ni-ic{font-size:15px;flex-shrink:0;width:20px;text-align:center}
+.ni-tx{flex:1;overflow:hidden;text-overflow:ellipsis}
+.ni-cnt{background:var(--pr);color:#fff;font-size:10px;font-weight:700;border-radius:8px;padding:1px 6px}
+.pdot{border-radius:50%;display:inline-block;flex-shrink:0}
+.sb-bot{padding:10px 6px;border-top:.5px solid var(--sep)}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+/* TOPBAR */
+.topbar{height:48px;background:rgba(17,17,19,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:.5px solid var(--sep);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;flex:1}
+.tb-r{display:flex;align-items:center;gap:6px}
+.ic-btn{width:30px;height:30px;border-radius:7px;background:var(--sur2);border:.5px solid var(--sep2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--tx);transition:all .15s}
+.ic-btn:hover{background:var(--sur3)}.ic-btn:active{transform:scale(.92)}
+.sdot{width:6px;height:6px;border-radius:50%}.s-ok{background:var(--gr)}.s-err{background:var(--rd)}.s-ing{background:var(--or);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px}
+.page-in{animation:fadeUp .25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes springIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:rgba(28,28,32,.8);backdrop-filter:blur(12px);border:.5px solid var(--sep2);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;user-select:none}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.stat-card.act{border-color:currentColor;box-shadow:0 0 0 1px currentColor}
+.stat-n{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.stat-l{font-size:12px;color:var(--tx2);margin-top:5px;font-weight:500}
+/* FILTERS */
+.filter-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fchip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;border:.5px solid var(--sep);background:var(--sur);color:var(--tx2);cursor:pointer;transition:all .15s;font-family:inherit}
+.fchip:hover{background:var(--sur2);color:var(--tx)}.fchip.on{background:var(--prd);border-color:rgba(204,120,92,.35);color:var(--pr);font-weight:600}
+/* SEG BTNS */
+.seg{display:flex;gap:0;background:var(--sur2);border-radius:10px;padding:3px;border:.5px solid var(--sep2)}
+.seg-b{padding:6px 14px;font-size:12px;font-weight:500;font-family:inherit;border:none;border-radius:7px;cursor:pointer;transition:all .18s;background:transparent;color:var(--tx2);white-space:nowrap}
+.seg-b.on{background:var(--pr);color:#fff;font-weight:600}
+/* TASKS */
+.task-list{display:flex;flex-direction:column;gap:6px}
+.task-item{background:rgba(26,26,30,.8);backdrop-filter:blur(10px);border:.5px solid var(--sep);border-radius:10px;padding:12px 14px;transition:all .2s;cursor:pointer}
+.task-item:hover{border-color:var(--sep2);transform:translateY(-1px);box-shadow:var(--sh)}
+.task-item.corr{border-left:3px solid var(--or)}
+.task-item.done{opacity:.55}
+.task-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.task-title{font-size:13px;font-weight:600;flex:1}
+.task-meta{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;font-size:11px;color:var(--tx2)}
+.proj-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:10px;background:var(--sur2)}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.badge::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.b-new{background:var(--sur3);color:var(--tx2)}.b-new::before{background:var(--tx2)}
+.b-progress{background:var(--bld);color:var(--bl)}.b-progress::before{background:var(--bl)}
+.b-submitted{background:var(--grd);color:var(--gr)}.b-submitted::before{background:var(--gr);animation:blink 1.5s infinite}
+.b-corrections{background:var(--ord);color:var(--or)}.b-corrections::before{background:var(--or)}
+.b-approved{background:var(--prd);color:var(--pr)}.b-approved::before{background:var(--pr)}
+.role-e{background:var(--bld);color:var(--bl)}.role-c{background:var(--grd);color:var(--gr)}.role-a{background:var(--ted);color:var(--te)}
+/* DETAIL PANEL */
+.dp{width:320px;flex-shrink:0;background:rgba(20,20,24,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-left:.5px solid var(--sep);display:flex;flex-direction:column;overflow:hidden}
+.dp-top{padding:14px 16px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dp-body{padding:14px 16px;flex:1;overflow-y:auto}
+.dp-sec{margin-bottom:14px}
+.dp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin-bottom:6px}
+.dp-foot{padding:12px 16px;border-top:.5px solid var(--sep);display:flex;flex-direction:column;gap:6px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit;border-radius:8px;border:none;cursor:pointer;transition:all .16s;white-space:nowrap}
+.btn:active{transform:scale(.94)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-pr{background:var(--pr);color:#fff;box-shadow:0 2px 10px rgba(204,120,92,.35)}.btn-pr:hover{background:var(--prl)}
+.btn-gr{background:var(--gr);color:#fff;box-shadow:0 2px 10px rgba(52,199,89,.3)}.btn-gr:hover{filter:brightness(1.1)}
+.btn-or{background:var(--ord);color:var(--or);border:.5px solid rgba(255,149,0,.25)}.btn-or:hover{background:rgba(255,149,0,.2)}
+.btn-rd{background:var(--rdd);color:var(--rd);border:.5px solid rgba(255,69,58,.2)}.btn-rd:hover{background:rgba(255,69,58,.18)}
+.btn-gh{background:transparent;color:var(--tx2);border:.5px solid var(--sep2)}.btn-gh:hover{background:var(--sur2);color:var(--tx)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}.btn-xs{padding:3px 8px;font-size:11px;border-radius:5px}.btn-full{width:100%}
+/* FORMS */
+.fg{margin-bottom:12px}.flbl{font-size:11px;color:var(--tx2);margin-bottom:5px;display:block;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+input[type=text],input[type=password],input[type=url],input[type=datetime-local],select,textarea{width:100%;background:var(--sur2);border:.5px solid var(--sep2);border-radius:8px;color:var(--tx);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);box-shadow:0 0 0 3px var(--prd)}
+select option{background:var(--sur)}textarea{min-height:72px;resize:vertical}
+input[type=file]{display:block;width:100%;padding:10px;background:var(--sur2);border:.5px solid var(--sep2);border-radius:8px;color:var(--tx);cursor:pointer;font-size:13px;font-family:inherit}
+.upload-zone{border:1.5px dashed var(--sep2);border-radius:10px;background:var(--sur2);padding:20px;text-align:center;transition:all .2s}
+.upload-zone.drag{border-color:var(--pr);background:var(--prd)}
+.prog-wrap{background:var(--sur3);border-radius:3px;height:3px;overflow:hidden;margin-top:8px;display:none}
+.prog-bar{height:100%;border-radius:3px;width:0;background:linear-gradient(90deg,var(--pr),var(--te));transition:width .3s}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);animation:fadeUp .2s both}
+.modal{background:var(--sur);border:.5px solid var(--sep2);border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh3);animation:springIn .28s ease both}
+.modal-lg{max-width:640px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.modal-x{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:18px;padding:2px}
+.modal-x:hover{color:var(--tx)}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.sep-line{height:.5px;background:var(--sep2);margin:14px 0}
+.err-msg{font-size:12px;color:var(--rd);margin-bottom:8px;font-weight:500;display:none}
+/* COLORS */
+.colors{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.c-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.c-opt.sel,.c-opt:hover{transform:scale(1.2);border-color:var(--tx)}
+/* LINK */
+.link-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bld);border:.5px solid rgba(10,132,255,.2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--bl)}
+.link-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.link-chip button{background:none;border:none;color:var(--bl);cursor:pointer;font-size:12px;opacity:.7}
+.link-chip button:hover{opacity:1}
+/* DEADLINE */
+.dl-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--ord);color:var(--or);border:.5px solid rgba(255,149,0,.25)}
+.dl-badge.over{background:var(--rdd);color:var(--rd);border-color:rgba(255,69,58,.25)}
+/* AVATAR */
+.uav{border-radius:50%;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+/* SECTION HDR */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.pg-title{font-size:20px;font-weight:700;letter-spacing:-.04em}
+.pg-sub{font-size:13px;color:var(--tx2);margin-top:3px}
+.proj-sep{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.proj-sep::after{content:'';flex:1;height:.5px;background:var(--sep)}
+/* ANALYTICS */
+.chart-card{background:rgba(28,28,32,.8);backdrop-filter:blur(12px);border:.5px solid var(--sep);border-radius:12px;padding:16px;margin-bottom:12px}
+.chart-ttl{font-size:13px;font-weight:700;margin-bottom:12px}
+.an-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mbar-wrap{flex:1;background:var(--sur3);border-radius:3px;height:5px;overflow:hidden}
+.mbar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--pr),var(--te));transition:width .8s}
+/* TABLE */
+.tbl-wrap{background:var(--sur);border:.5px solid var(--sep2);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx2);padding:9px 14px;text-align:left;border-bottom:.5px solid var(--sep2);background:var(--sur2)}
+.tbl td{padding:9px 14px;border-bottom:.5px solid var(--sep);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--sur2)}
+/* EMPTY */
+.empty{text-align:center;padding:50px 24px;color:var(--tx2)}
+.empty-ic{font-size:40px;margin-bottom:12px;display:block}
+.empty-ttl{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:4px}
+/* LOGIN */
+.login-wrap{height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px}
+.login-card{background:var(--sur);border:.5px solid var(--sep2);border-radius:18px;padding:30px 26px;width:100%;max-width:330px;box-shadow:var(--sh3);animation:springIn .4s ease both}
+.login-ic{width:56px;height:56px;background:linear-gradient(135deg,var(--pr),var(--te));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 6px 22px rgba(204,120,92,.45)}
+/* LOADING */
+.full-load{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.load-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--pr),var(--te));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 8px 30px rgba(204,120,92,.45);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.load-dots{display:flex;gap:5px}
+.load-dots span{width:5px;height:5px;border-radius:50%;background:var(--tx3);animation:dotB .9s ease infinite}
+.load-dots span:nth-child(2){animation-delay:.15s}.load-dots span:nth-child(3){animation-delay:.3s}
+@keyframes dotB{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+code{background:var(--sur2);padding:2px 6px;border-radius:5px;font-size:11px;font-family:monospace}
+/* NOTICE */
+.notice-ok{display:flex;align-items:center;gap:8px;background:var(--grd);border:.5px solid rgba(52,199,89,.25);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:500;color:var(--gr);margin-bottom:12px}
+.notice-warn{background:var(--ord);border:.5px solid rgba(255,149,0,.25);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--or);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+/* PRAVKA */
+.prav-img{max-width:100%;border-radius:8px;margin-top:6px;cursor:pointer}
+/* POWERED */
+.powered{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--tx3);z-index:10;pointer-events:none;white-space:nowrap}
+/* BIG AVATAR */
+.big-av{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--sep2)}
+.prof-pic-wrap{position:relative;display:inline-block}
+.prof-pic-wrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;border-radius:50%}
+/* CHAT */
+.chat-fab{position:fixed;bottom:24px;right:24px;z-index:500;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--te));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(204,120,92,.5);transition:transform .25s ease,box-shadow .2s}
+.chat-fab:hover{transform:scale(1.1)}.chat-fab:active{transform:scale(.94)}
+.chat-panel{position:fixed;bottom:88px;right:24px;z-index:499;width:340px;height:520px;background:var(--sur);backdrop-filter:blur(24px);border:.5px solid var(--sep2);border-radius:18px;box-shadow:var(--sh3);display:flex;flex-direction:column;animation:springIn .3s ease both;overflow:hidden}
+.chat-hdr{padding:12px 14px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--sur2)}
+.chat-ttl{font-size:14px;font-weight:700;flex:1}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{display:flex;gap:7px;align-items:flex-end}
+.msg.mine{flex-direction:row-reverse}
+.msg-bubble{background:var(--sur2);border:.5px solid var(--sep);border-radius:14px;border-bottom-left-radius:4px;padding:7px 10px;max-width:220px;font-size:13px;line-height:1.45}
+.msg.mine .msg-bubble{background:var(--pr);color:#fff;border-radius:14px;border-bottom-right-radius:4px;border-color:transparent}
+.msg-name{font-size:10px;font-weight:600;color:var(--tx2);margin-bottom:3px}
+.msg-time{font-size:10px;color:var(--tx3);flex-shrink:0;margin-bottom:2px}
+.msg-img{max-width:180px;border-radius:10px;margin-top:4px;cursor:pointer}
+.msg-audio{margin-top:4px;width:180px}
+.chat-inp-bar{padding:10px 12px;border-top:.5px solid var(--sep);display:flex;align-items:center;gap:7px;flex-shrink:0;background:var(--sur2)}
+.chat-inp{flex:1;background:var(--sur3);border:.5px solid var(--sep2);border-radius:20px;color:var(--tx);padding:7px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.chat-inp:focus{border-color:var(--pr)}
+.chat-ic-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--sur3);color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
+.chat-ic-btn:hover{background:var(--sur4);color:var(--tx)}
+.chat-ic-btn.rec{background:var(--rdd);color:var(--rd);animation:blink 1s infinite}
+.send-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--pr);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0}
+.send-btn:hover{background:var(--prl);transform:scale(1.08)}
+.chat-day{text-align:center;font-size:10px;color:var(--tx3);margin:4px 0}
+.sticker-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:8px}
+.sticker-btn{font-size:24px;border:none;background:none;cursor:pointer;border-radius:6px;padding:4px;transition:transform .15s}
+.sticker-btn:hover{transform:scale(1.3);background:var(--sur2)}
+.chat-people{flex:1;overflow-y:auto;padding:8px}
+.chat-person{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .15s}
+.chat-person:hover{background:var(--sur2)}
+@media(max-width:768px){
+  .sb{position:fixed;left:-220px;top:0;bottom:0;z-index:300;transition:left .25s}
+  .sb.mo{left:0}
+  .sb.mo::after{content:'';position:fixed;inset:0;left:220px;background:rgba(0,0,0,.5);z-index:-1}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .an-grid{grid-template-columns:1fr}
+  .dp{position:fixed;right:-320px;top:0;bottom:0;z-index:300;transition:right .25s;width:300px}
+  .dp.mo{right:0}
+  #sb-toggle{display:flex!important}
+  .modal{margin:8px}
+  input[type=file]{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="full-load"><div class="load-logo">🎬</div><div class="load-dots"><span></span><span></span><span></span></div></div></div>
+<script>
+// ══ SUPABASE ══
+const SB_URL='https://baznohstrdvqgqvjmgki.supabase.co';
+const SB_KEY='sb_publishable__55U9kl-dMOPIpIv57IaeA_xWksxaQL';
+const BUCKET='kz-files',DATA_KEY='kz_data.json';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+// ══ DEFAULTS ══
+const DEF_USERS=[
+  {id:'m1',name:'Sulton',username:'m1',pass:'1234',role:'editor',pic:null},
+  {id:'m2',name:'Dior',username:'m2',pass:'1234',role:'editor',pic:null},
+  {id:'m3',name:'Bunyod',username:'m3',pass:'1234',role:'editor',pic:null},
+  {id:'t1',name:'Aziz',username:'t1',pass:'1234',role:'checker',pic:null},
+  {id:'t2',name:'Jasur',username:'t2',pass:'1234',role:'checker',pic:null},
+  {id:'a0',name:'Admin',username:'admin',pass:'admin1234',role:'admin',pic:null},
+];
+const DEF_PROJ=[{id:'p1',name:'Proyekt A',color:'#CC785C'},{id:'p2',name:'Proyekt B',color:'#2DD4BF'},{id:'p3',name:'Proyekt C',color:'#34C759'}];
+const P_COLORS=['#CC785C','#2DD4BF','#34C759','#FF9500','#0A84FF','#FF453A','#5AC8FA','#FFD60A','#FF375F','#32ADE6'];
+const ST={new:{l:'Yangi',c:'b-new'},in_progress:{l:'Jarayonda',c:'b-progress'},submitted:{l:'Tekshirishda',c:'b-submitted'},corrections:{l:'Pravkada',c:'b-corrections'},approved:{l:'Tasdiqlandi',c:'b-approved'}};
+const ROLES={editor:'Montajer',checker:'Tekshiruvchi',admin:'Admin'};
+const AVC={editor:'background:rgba(10,132,255,.2);color:#409cff',checker:'background:rgba(52,199,89,.2);color:#34C759',admin:'background:rgba(45,212,191,.2);color:#2DD4BF'};
+
+// ══ STATE ══
+let cu=null,tasks=[],users=[],projects=[],
+    activePage='tasks',activeP='all',activeSt='all',activeEd='all',
+    activeStatCard=null,selectedTask=null,modalFn=null,
+    noticeMsg='',syncSt='idle',isUploading=false,analyticsPeriod='month',
+    chatOpen=false,chatWith=null,chatMessages=[],
+    mediaRecorder=null,chatRecording=false,chatPollTimer=null,
+    _selColor='#CC785C',_taskLinks=[];
+
+// ══ CLOUD ══
+async function cloudLoad(){
+  syncSt='syncing';
+  try{
+    const url='https://baznohstrdvqgqvjmgki.supabase.co/storage/v1/object/public/kz-files/kz_data.json?t='+Date.now();
+    const res=await fetch(url,{cache:'no-store'});
+    if(res.status===200){
+      const j=await res.json();
+      users=(j.users||DEF_USERS).map(u=>({pic:null,...u}));
+      projects=(j.projects||DEF_PROJ).map(p=>({color:'#CC785C',...p}));
+      tasks=j.tasks||[];
+    }else if(res.status===400||res.status===404){
+      await cloudSave({users:DEF_USERS,projects:DEF_PROJ,tasks:[]},false);
+      users=DEF_USERS;projects=DEF_PROJ;tasks=[];
+    }else{
+      throw new Error('HTTP '+res.status);
+    }
+    if(!users.find(u=>u.role==='admin'))users.push(DEF_USERS[5]);
+    cacheLocal();syncSt='ok';
+  }catch(e){
+    console.warn('cloudLoad:',e.message||e);
+    loadLocal();syncSt='err';
+  }
+}
+async function cloudSave(ov,uc=true){
+  const payload=ov||{users,projects,tasks};
+  try{
+    const bl=new Blob([JSON.stringify(payload)],{type:'application/json'});
+    const{error}=await sb.storage.from(BUCKET).upload(DATA_KEY,bl,{upsert:true,contentType:'application/json'});
+    if(error)throw error;syncSt='ok';
+  }catch(e){console.warn(e);syncSt='err';}
+  if(uc)cacheLocal();
+}
+function cacheLocal(){try{localStorage.setItem('kz_c',JSON.stringify({users,projects,tasks}));}catch{}}
+function loadLocal(){
+  try{
+    const c=JSON.parse(localStorage.getItem('kz_c')||'null');
+    if(c){users=(c.users||DEF_USERS).map(u=>({pic:null,...u}));projects=(c.projects||DEF_PROJ).map(p=>({color:'#CC785C',...p}));tasks=c.tasks||[];}
+    else{users=DEF_USERS;projects=DEF_PROJ;tasks=[];}
+    if(!users.find(u=>u.role==='admin'))users.push(DEF_USERS[5]);
+  }catch{users=DEF_USERS;projects=DEF_PROJ;tasks=[];}
+}
+
+// ══ FILES ══
+const fIcon=n=>{const e=(n||'').split('.').pop().toLowerCase();if(['mp4','mov','avi','mkv','webm'].includes(e))return'🎬';if(['mp3','wav','aac','m4a','ogg','webm'].includes(e))return'🎵';if(['jpg','jpeg','png','gif','webp'].includes(e))return'🖼️';return'📎';};
+const isVid=n=>['mp4','mov','avi','mkv','webm'].includes((n||'').split('.').pop().toLowerCase());
+const isAud=n=>['mp3','wav','aac','m4a','ogg','webm'].includes((n||'').split('.').pop().toLowerCase());
+const fsize=b=>b>1048576?(b/1048576).toFixed(1)+' MB':(b/1024).toFixed(0)+' KB';
+const gpUrl=p=>sb.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
+
+async function uploadFile(file,pid){
+  const safe=Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path='uploads/'+safe;
+  const bar=pid?document.getElementById(pid+'-bar'):null;
+  const wrap=pid?document.getElementById(pid):null;
+  if(wrap)wrap.style.display='block';
+  isUploading=true;let fp=0;
+  const t=setInterval(()=>{fp=Math.min(fp+4,82);if(bar)bar.style.width=fp+'%';},180);
+  try{
+    const{error}=await sb.storage.from(BUCKET).upload(path,file,{upsert:true,contentType:file.type});
+    clearInterval(t);isUploading=false;
+    if(error)throw error;
+    if(bar){bar.style.width='100%';setTimeout(()=>{if(wrap)wrap.style.display='none';bar.style.width='0%';},700);}
+    return{path,url:gpUrl(path),name:file.name,size:file.size};
+  }catch(e){
+    clearInterval(t);isUploading=false;
+    if(bar)bar.style.width='0%';if(wrap)wrap.style.display='none';
+    throw e;
+  }
+}
+async function delFile(p){if(!p)return;try{await sb.storage.from(BUCKET).remove([p]);}catch{}}
+
+// ══ HELPERS ══
+const $$=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fdate=ts=>new Date(ts).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'});
+const fdateL=ts=>new Date(ts).toLocaleDateString('ru',{day:'2-digit',month:'long'});
+const initials=n=>(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
+const str=a=>JSON.stringify(a);
+function badge(s){const x=ST[s]||ST.new;return`<span class="badge ${x.c}">${x.l}</span>`;}
+function roleBadge(r){const c={editor:'role-e',checker:'role-c',admin:'role-a'}[r]||'';return`<span class="badge ${c}">${ROLES[r]||r}</span>`;}
+const pColor=id=>projects.find(p=>p.id===id)?.color||'#CC785C';
+const pName=id=>projects.find(p=>p.id===id)?.name||'—';
+const uName=id=>users.find(u=>u.id===id)?.name||'—';
+
+function avatarHTML(uid,size=20){
+  const u=users.find(x=>x.id===uid);
+  const s=`width:${size}px;height:${size}px;font-size:${Math.floor(size*.38)}px;border-radius:50%`;
+  if(u?.pic)return`<img src="${esc(u.pic)}" class="uav" style="${s}" onerror="this.style.display='none'"/>`;
+  return`<div class="uav" style="${s};${AVC[u?.role||'editor']};display:flex;align-items:center;justify-content:center;font-weight:700">${initials(u?.name||'')}</div>`;
+}
+
+function dlBadge(ts){
+  if(!ts)return'';
+  const diff=ts-Date.now();
+  const d=new Date(ts);
+  const str2=d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  return`<span class="dl-badge ${diff<0?'over':''}">${diff<0?'⚠️':'⏰'} ${str2}</span>`;
+}
+
+function mediaHTML(url,name){
+  if(!url)return'';
+  if(isVid(name))return`<div style="margin-top:8px;border-radius:8px;overflow:hidden;background:#000"><video controls preload="metadata" src="${esc(url)}" style="width:100%;max-height:200px;display:block"></video></div>`;
+  if(isAud(name))return`<div style="margin-top:8px"><audio controls src="${esc(url)}" style="width:100%"></audio></div>`;
+  return`<a href="${esc(url)}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;color:var(--bl)">${fIcon(name)} ${esc(name||'Fayl')}</a>`;
+}
+
+function emptyS(t,s){return`<div class="empty"><span class="empty-ic">📋</span><div class="empty-ttl">${t}</div><div>${s}</div></div>`;}
+
+function renderLinks(){return _taskLinks.map((l,i)=>`<div class="link-chip"><span>${esc(l.length>35?l.slice(0,35)+'...':l)}</span><button onclick="removeLink(${i})">✕</button></div>`).join('');}
+function addLink(){const inp=$$('m-link-inp');const v=inp?.value.trim();if(!v)return;if(!v.startsWith('http')){alert('https:// bilan boshlansin');return;}_taskLinks.push(v);if(inp)inp.value='';const w=$$('links-wrap');if(w)w.innerHTML=renderLinks();}
+function removeLink(i){_taskLinks.splice(i,1);const w=$$('links-wrap');if(w)w.innerHTML=renderLinks();}
+
+// ══ RENDER ══
+function render(){
+  const app=$$('app');if(!app)return;
+  if(!cu){app.innerHTML=loginHTML();return;}
+  app.innerHTML=shellHTML();
+}
+function showNotice(m){noticeMsg=m;render();setTimeout(()=>{if(noticeMsg===m){noticeMsg='';if(cu)render();}},3000);}
+function closeModal(){modalFn=null;render();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalFn)closeModal();});
+
+// ══ LOGIN ══
+function loginHTML(){
+  return`<div class="login-wrap"><div class="login-card">
+    <div class="login-ic">🎬</div>
+    <div style="font-size:20px;font-weight:700;text-align:center;letter-spacing:-.04em;margin-bottom:4px">Kontent Zavod</div>
+    <div style="font-size:13px;color:var(--tx2);text-align:center;margin-bottom:24px">Montaj boshqaruv tizimi</div>
+    ${syncSt==='err'?'<div class="notice-warn" style="margin-bottom:14px;font-size:12px">⚠️ Server bilan aloqa yo\'q</div>':''}
+    <div class="fg"><label class="flbl">Login</label><input type="text" id="un" placeholder="loginni kiriting" autocomplete="username"/></div>
+    <div class="fg"><label class="flbl">Parol</label><input type="password" id="pw" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div id="lerr" style="font-size:12px;color:var(--rd);margin-bottom:8px;display:none">Noto'g'ri login yoki parol</div>
+    <button class="btn btn-pr btn-full" onclick="doLogin()">Kirish</button>
+    <div style="text-align:center;margin-top:14px"><button class="btn btn-gh btn-sm" onclick="toggleTheme()">${isDark()?'☀️ Yorug\'':'🌙 Qorong\'u'} rejim</button></div>
+  </div></div>`;
+}
+function doLogin(){
+  const un=$$('un')?.value.trim(),pw=$$('pw')?.value;
+  const u=users.find(x=>x.username===un&&x.pass===pw);
+  if(!u){const e=$$('lerr');if(e)e.style.display='block';return;}
+  cu=u;localStorage.setItem('kz_s',cu.id);render();
+}
+function doLogout(){cu=null;selectedTask=null;modalFn=null;localStorage.removeItem('kz_s');render();}
+function toggleTheme(){const t=isDark()?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('kz_th',t);render();}
+
+// ══ SHELL ══
+function shellHTML(){
+  const allMine=cu.role==='editor'?tasks.filter(t=>t.assignedTo===cu.id):tasks;
+  const pendingCheck=tasks.filter(t=>t.status==='submitted').length;
+  const navItems=cu.role==='editor'?[
+    {id:'tasks',icon:'📋',label:'Topshiriqlarim',cnt:allMine.filter(t=>t.status!=='approved').length||null},
+    {id:'profile',icon:'👤',label:'Profilim'},
+  ]:[
+    {id:'tasks',icon:'📋',label:'Topshiriqlar',cnt:pendingCheck||null},
+    {id:'analytics',icon:'📊',label:'Statistika'},
+    {id:'profile',icon:'👤',label:'Profil'},
+    ...(cu.role==='admin'?[{id:'admin',icon:'⚙️',label:'Admin'}]:[]),
+  ];
+  const projNav=projects.map(p=>{
+    const cnt=cu.role==='editor'?tasks.filter(t=>t.projectId===p.id&&t.assignedTo===cu.id).length:tasks.filter(t=>t.projectId===p.id).length;
+    return`<button class="ni ${activeP===p.id&&activePage==='tasks'?'on':''}" onclick="setP('${p.id}')">
+      <span class="pdot" style="background:${p.color};width:8px;height:8px"></span>
+      <span class="ni-tx">${esc(p.name)}</span>
+      ${cnt?`<span class="ni-cnt">${cnt}</span>`:''}
+    </button>`;
+  }).join('');
+  return`<div class="app">
+  <div class="sb">
+    <div class="sb-top"><div class="logo"><div class="logo-m">🎬</div><span>Kontent Zavod</span></div></div>
+    <div class="sb-nav">
+      ${navItems.map(n=>`<button class="ni ${activePage===n.id?'on':''}" onclick="setPage('${n.id}')">
+        <span class="ni-ic">${n.icon}</span><span class="ni-tx">${n.label}</span>
+        ${n.cnt?`<span class="ni-cnt">${n.cnt}</span>`:''}
+      </button>`).join('')}
+      <div class="nav-lbl">Proyektlar</div>${projNav}
+    </div>
+    <div class="sb-bot">
+      <button class="ni" onclick="setPage('profile')">
+        ${cu.pic?`<img src="${esc(cu.pic)}" style="width:22px;height:22px;border-radius:50%;object-fit:cover"/>`:avatarHTML(cu.id,22)}
+        <span class="ni-tx">${esc(cu.name)}</span>${roleBadge(cu.role)}
+      </button>
+      <button class="ni" onclick="doLogout()"><span class="ni-ic">↗</span><span class="ni-tx">Chiqish</span></button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <button class="ic-btn" id="sb-toggle" onclick="toggleSidebar()" style="display:none">☰</button>
+      <div class="tb-title">${{tasks:'Topshiriqlar',analytics:'Statistika',admin:'Admin',profile:'Profil'}[activePage]||'Topshiriqlar'}</div>
+      <div class="tb-r">
+        <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx2)">
+          <span class="sdot ${syncSt==='ok'?'s-ok':syncSt==='syncing'?'s-ing':'s-err'}"></span>
+        </span>
+        <button class="ic-btn" onclick="doRefresh()">↻</button>
+        <button class="ic-btn" onclick="toggleTheme()">${isDark()?'☀️':'🌙'}</button>
+        ${cu.role!=='editor'?`<button class="btn btn-pr btn-sm" onclick="openAddTask()">+ Yangi topshiriq</button>`:''}
+      </div>
+    </div>
+    <div class="content page-in" id="mc">
+      ${noticeMsg?`<div class="notice-ok">✓ ${noticeMsg}</div>`:''}
+      ${syncSt==='err'?`<div class="notice-warn">⚠️ Server bilan aloqa yo'q <button class="btn btn-gh btn-xs" onclick="doRefresh()">Qayta urinish</button></div>`:''}
+      ${activePage==='tasks'?tasksPageHTML():activePage==='analytics'?analyticsPageHTML():activePage==='admin'?adminPageHTML():profilePageHTML()}
+    </div>
+  </div>
+  ${selectedTask?detailPanelHTML():''}
+  </div>
+  ${modalFn?modalFn():''}`;
+}
+
+function toggleSidebar(){const sb=document.querySelector('.sb');if(sb)sb.classList.toggle('mo');}
+// Show hamburger on mobile
+if(typeof window!=='undefined'){
+  const checkMobile=()=>{const btn=document.getElementById('sb-toggle');if(btn)btn.style.display=window.innerWidth<=768?'flex':'none';};
+  window.addEventListener('resize',checkMobile);setTimeout(checkMobile,100);
+}
+function setPage(p){activePage=p;activeP='all';selectedTask=null;render();}
+function setP(p){activeP=p;activePage='tasks';activeSt='all';activeStatCard=null;selectedTask=null;render();}
+async function doRefresh(){syncSt='syncing';render();await cloudLoad();if(cu){const f=users.find(u=>u.id===cu.id);if(f)cu=f;}render();}
+
+// ══ TASKS PAGE ══
+function tasksPageHTML(){
+  let vis=cu.role==='editor'?tasks.filter(t=>t.assignedTo===cu.id):tasks;
+  const total=vis.length,checkN=vis.filter(t=>t.status==='submitted').length,corrN=vis.filter(t=>t.status==='corrections').length,doneN=vis.filter(t=>t.status==='approved').length;
+  if(activeP!=='all')vis=vis.filter(t=>t.projectId===activeP);
+  if(activeSt!=='all')vis=vis.filter(t=>t.status===activeSt);
+  if(activeEd!=='all'&&cu.role!=='editor')vis=vis.filter(t=>t.assignedTo===activeEd);
+  if(activeStatCard==='check')vis=vis.filter(t=>t.status==='submitted');
+  else if(activeStatCard==='corr')vis=vis.filter(t=>t.status==='corrections');
+  else if(activeStatCard==='done')vis=vis.filter(t=>t.status==='approved');
+  const edSel=cu.role!=='editor'?`<select onchange="activeEd=this.value;render()" style="height:28px;padding:0 8px;font-size:12px;border-radius:6px;background:var(--sur2);border:.5px solid var(--sep2);color:var(--tx)">
+    <option value="all">Barcha montajerlar</option>
+    ${users.filter(u=>u.role==='editor').map(u=>`<option value="${u.id}" ${activeEd===u.id?'selected':''}>${esc(u.name)}</option>`).join('')}
+  </select>`:'';
+  const blocks=projects.map(p=>{
+    const pt=vis.filter(t=>t.projectId===p.id);
+    if(!pt.length)return'';
+    return`<div class="proj-sep"><span class="pdot" style="background:${p.color};width:8px;height:8px"></span>${esc(p.name)}<span style="color:var(--tx3);font-size:10px">${pt.length} ta</span></div>
+    <div class="task-list">${pt.map(taskItemHTML).join('')}</div>`;
+  }).join('');
+  return`
+  <div class="stats-row">
+    <div class="stat-card ${activeStatCard===null?'':''}  " onclick="toggleSC(null)" style="${activeStatCard===null?'border-color:var(--tx2)':''}">
+      <div class="stat-n">${total}</div><div class="stat-l">Jami</div>
+    </div>
+    <div class="stat-card" onclick="toggleSC('check')" style="${activeStatCard==='check'?'border-color:var(--gr);color:var(--gr)':''}">
+      <div class="stat-n" style="color:var(--gr)">${checkN}</div><div class="stat-l">Tekshirishda</div>
+    </div>
+    <div class="stat-card" onclick="toggleSC('corr')" style="${activeStatCard==='corr'?'border-color:var(--or);color:var(--or)':''}">
+      <div class="stat-n" style="color:var(--or)">${corrN}</div><div class="stat-l">Pravkada</div>
+    </div>
+    <div class="stat-card" onclick="toggleSC('done')" style="${activeStatCard==='done'?'border-color:var(--pr);color:var(--pr)':''}">
+      <div class="stat-n" style="color:var(--pr)">${doneN}</div><div class="stat-l">Tasdiqlandi</div>
+    </div>
+  </div>
+  <div class="filter-row">
+    ${[{k:'all',l:'Barchasi'},{k:'new',l:'Yangi'},{k:'in_progress',l:'Jarayonda'},{k:'submitted',l:'Tekshirishda'},{k:'corrections',l:'Pravkada'},{k:'approved',l:'Tayyor'}].map(f=>`<button class="fchip ${activeSt===f.k&&!activeStatCard?'on':''}" onclick="activeSt='${f.k}';activeStatCard=null;render()">${f.l}</button>`).join('')}
+    <div style="margin-left:auto">${edSel}</div>
+  </div>
+  ${activeStatCard?`<div style="background:var(--prd);border:.5px solid rgba(204,120,92,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--pr);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+    <span>🔍 Filtr: ${activeStatCard==='check'?'Tekshirishda':activeStatCard==='corr'?'Pravkada':'Tasdiqlandi'} (${vis.length} ta)</span>
+    <button class="btn btn-gh btn-xs" onclick="activeStatCard=null;render()">✕ Tozalash</button>
+  </div>`:''}
+  ${vis.length===0?emptyS('Topshiriqlar yo\'q','Yangi topshiriq uchun + tugmasini bosing'):blocks}`;
+}
+
+function toggleSC(k){activeStatCard=k;activeSt='all';render();}
+
+function taskItemHTML(t){
+  const links=t.links||[];
+  return`<div class="task-item ${t.status==='corrections'?'corr':''} ${t.status==='approved'?'done':''}" onclick="openDP('${t.id}')">
+    <div class="task-top">
+      <div style="flex:1;min-width:0">
+        <div class="task-title">${esc(t.title)}</div>
+        <div class="task-meta">
+          ${cu.role!=='editor'?`${avatarHTML(t.assignedTo,18)} <span>${esc(uName(t.assignedTo))}</span><span>·</span>`:''}
+          <span class="proj-tag"><span class="pdot" style="background:${pColor(t.projectId)};width:6px;height:6px"></span>${esc(pName(t.projectId))}</span>
+          <span>·</span><span>${fdate(t.createdAt)}</span>
+          ${t.deadline?`<span>·</span>${dlBadge(t.deadline)}`:''}
+          ${links.length?`<span>·</span><span>🔗 ${links.length}</span>`:''}
+        </div>
+      </div>
+      ${badge(t.status)}
+    </div>
+    ${t.scenario?`<div style="font-size:12px;color:var(--tx2);margin-top:5px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(t.scenario)}</div>`:''}
+  </div>`;
+}
+
+// ══ DETAIL PANEL ══
+function openDP(id){selectedTask=id;render();}
+function detailPanelHTML(){
+  const t=tasks.find(x=>x.id===selectedTask);if(!t)return'';
+  const isMyTask=cu.id===t.assignedTo;
+  const isChecker=cu.role==='checker'||cu.role==='admin';
+  const links=t.links||[];
+  const corrFiles=t.corrFiles||[];
+  const subFiles=t.subFiles||[];
+  return`<div class="dp">
+    <div class="dp-top">
+      <div style="font-size:14px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
+      <button class="ic-btn" onclick="selectedTask=null;render()" style="width:26px;height:26px;flex-shrink:0">✕</button>
+    </div>
+    <div class="dp-body">
+      <div class="dp-sec"><div class="dp-lbl">Status</div>${badge(t.status)}</div>
+      <div class="dp-sec"><div class="dp-lbl">Montajer</div><div style="display:flex;align-items:center;gap:8px;margin-top:4px">${avatarHTML(t.assignedTo,28)}<span style="font-size:13px;font-weight:500">${esc(uName(t.assignedTo))}</span></div></div>
+      <div class="dp-sec"><div class="dp-lbl">Proyekt</div><span class="proj-tag"><span class="pdot" style="background:${pColor(t.projectId)};width:8px;height:8px"></span>${esc(pName(t.projectId))}</span></div>
+      ${t.deadline?`<div class="dp-sec"><div class="dp-lbl">Deadline</div>${dlBadge(t.deadline)}</div>`:''}
+      ${t.scenario?`<div class="dp-sec"><div class="dp-lbl">Ssenariy</div><div style="font-size:13px;line-height:1.6">${esc(t.scenario)}</div></div>`:''}
+      ${links.length?`<div class="dp-sec"><div class="dp-lbl">Havolalar</div>${links.map(l=>`<div style="margin-top:4px"><a href="${esc(l)}" target="_blank" style="color:var(--bl);font-size:12px;word-break:break-all">🔗 ${esc(l)}</a></div>`).join('')}</div>`:''}
+      ${t.matUrl?`<div class="dp-sec"><div class="dp-lbl">Material</div>${mediaHTML(t.matUrl,t.matName)}</div>`:''}
+      ${t.corrections?`<div class="dp-sec">
+        <div class="dp-lbl" style="color:var(--or)">Pravkalar</div>
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:5px;display:flex;align-items:center;gap:5px">${avatarHTML(t.corrChecker||'',16)} ${esc(uName(t.corrChecker))} tomonidan</div>
+        <div style="font-size:13px;background:var(--ord);border:.5px solid rgba(255,149,0,.25);border-radius:8px;padding:8px 10px;line-height:1.6">${esc(t.corrections)}</div>
+        ${corrFiles.map(f=>isVid(f.name)?`<video controls src="${esc(f.url)}" style="width:100%;max-height:160px;margin-top:6px;border-radius:8px"></video>`:isAud(f.name)?`<audio controls src="${esc(f.url)}" style="width:100%;margin-top:6px"></audio>`:`<img src="${esc(f.url)}" class="prav-img" onclick="window.open('${esc(f.url)}')"/>`).join('')}
+      </div>`:''}
+      ${t.subUrl||subFiles.length?`<div class="dp-sec"><div class="dp-lbl" style="color:var(--gr)">Yuborilgan ish</div>${(subFiles.length?subFiles:[{url:t.subUrl,name:t.subName}]).map(f=>mediaHTML(f.url,f.name)).join('')}</div>`:''}
+      <div style="font-size:11px;color:var(--tx3);margin-top:8px">${fdateL(t.createdAt)} da yaratilgan</div>
+    </div>
+    <div class="dp-foot">
+      ${isChecker&&t.status==='submitted'?`<button class="btn btn-gr btn-sm btn-full" onclick="approveT('${t.id}')">✓ Tasdiqlash</button><button class="btn btn-or btn-sm btn-full" onclick="openCorrect('${t.id}')">✎ Pravka qo'shish</button>`:''}
+      ${isChecker&&t.status==='corrections'?`<button class="btn btn-or btn-sm btn-full" onclick="openCorrect('${t.id}')">+ Yana pravka qo'shish</button>`:''}
+      ${isMyTask&&t.status==='new'?`<button class="btn btn-pr btn-sm btn-full" onclick="doStart('${t.id}')">▶ Boshlash</button>`:''}
+      ${isMyTask&&(t.status==='in_progress'||t.status==='corrections')?`<button class="btn btn-gr btn-sm btn-full" onclick="openSubmit('${t.id}')">↑ ${t.status==='corrections'?'To\'g\'irlab yuborish':'Tekshirishga yuborish'}</button>`:''}
+      ${isMyTask&&(t.status==='submitted'||t.status==='approved')?`<button class="btn btn-gh btn-sm btn-full" onclick="openSubmit('${t.id}')">↺ Faylni almashtirish</button>`:''}
+      ${isChecker?`<div style="height:.5px;background:var(--sep2);margin:2px 0"></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${Object.entries(ST).map(([k,v])=>k!==t.status?`<button class="btn btn-gh btn-xs" onclick="setTaskStatus('${t.id}','${k}')">${v.l}</button>`:'').join('')}
+        </div>
+        <button class="btn btn-gh btn-sm btn-full" onclick="openEditTask('${t.id}')">✎ Tahrirlash</button>
+        <button class="btn btn-rd btn-sm btn-full" onclick="delT('${t.id}')">✕ O'chirish</button>`:''}
+    </div>
+  </div>`;
+}
+
+// ══ ADD TASK ══
+function openAddTask(){
+  _taskLinks=[];
+  const eopts=users.filter(u=>u.role==='editor').map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('');
+  const popts=projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">Yangi topshiriq <button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fg"><label class="flbl">Montajer</label><select id="m-ed">${eopts}</select></div>
+      <div class="fg"><label class="flbl">Proyekt</label><select id="m-prj">${popts}</select></div>
+    </div>
+    <div class="fg"><label class="flbl">Topshiriq nomi</label><input type="text" id="m-ttl" placeholder="Masalan: 5-son video"/></div>
+    <div class="fg"><label class="flbl">Ssenariy / Tavsif</label><textarea id="m-scenario" placeholder="Video haqida batafsil..."></textarea></div>
+    <div class="fg"><label class="flbl">Deadline (ixtiyoriy)</label><input type="datetime-local" id="m-deadline"/></div>
+    <div class="fg">
+      <label class="flbl">Havolalar (link)</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px"><input type="url" id="m-link-inp" placeholder="https://..." style="flex:1"/><button class="btn btn-gh btn-sm" type="button" onclick="addLink()">+ Qo'shish</button></div>
+      <div id="links-wrap" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+    </div>
+    <div class="sep-line"></div>
+    <div class="fg"><label class="flbl">Material (ixtiyoriy)</label>
+      <input type="file" id="m-file" accept="video/*,audio/*,image/*" onchange="const f=this.files[0];if(f){const i=$$('m-finfo');if(i){i.style.display='block';i.innerHTML='✓ '+esc(f.name)+' ('+fsize(f.size)+')';}}"/>
+      <div id="m-finfo" style="display:none;margin-top:5px;font-size:12px;color:var(--gr)"></div>
+      <div id="m-prog" class="prog-wrap"><div class="prog-bar" id="m-prog-bar"></div></div>
+    </div>
+    <div id="m-err" class="err-msg"></div>
+    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-pr" id="add-btn" onclick="addTask()">Topshiriq berish</button></div>
+  </div></div>`;render();
+}
+
+async function addTask(){
+  const ttl=$$('m-ttl')?.value.trim();if(!ttl){$$('m-ttl')?.focus();return;}
+  const btn=$$('add-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Saqlanmoqda...';}
+  const file=$$('m-file')?.files?.[0];let matUrl=null,matName=null,matPath=null;
+  if(file){
+    try{const r=await uploadFile(file,'m-prog');matUrl=r.url;matName=r.name;matPath=r.path;}
+    catch(e){const er=$$('m-err');if(er){er.style.display='block';er.textContent='Xatolik: '+e.message;}if(btn){btn.disabled=false;btn.textContent='Topshiriq berish';}return;}
+  }
+  const dlVal=$$('m-deadline')?.value;
+  tasks.push({id:'t'+Date.now(),projectId:$$('m-prj').value,assignedTo:$$('m-ed').value,
+    title:ttl,scenario:$$('m-scenario')?.value.trim()||null,links:[..._taskLinks],
+    deadline:dlVal?new Date(dlVal).getTime():null,
+    status:'new',corrections:'',corrChecker:null,corrFiles:[],
+    matUrl,matName,matPath,subUrl:null,subName:null,subPath:null,subFiles:[],
+    createdAt:Date.now()});
+  await cloudSave();modalFn=null;showNotice('Topshiriq muvaffaqiyatli berildi ✓');
+}
+
+// ══ EDIT TASK ══
+function openEditTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  _taskLinks=[...(t.links||[])];
+  const eopts=users.filter(u=>u.role==='editor').map(u=>`<option value="${u.id}" ${t.assignedTo===u.id?'selected':''}>${esc(u.name)}</option>`).join('');
+  const popts=projects.map(p=>`<option value="${p.id}" ${t.projectId===p.id?'selected':''}>${esc(p.name)}</option>`).join('');
+  const dlStr=t.deadline?new Date(t.deadline).toISOString().slice(0,16):'';
+  modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">Topshiriqni tahrirlash <button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fg"><label class="flbl">Montajer</label><select id="m-ed">${eopts}</select></div>
+      <div class="fg"><label class="flbl">Proyekt</label><select id="m-prj">${popts}</select></div>
+    </div>
+    <div class="fg"><label class="flbl">Nomi</label><input type="text" id="m-ttl" value="${esc(t.title)}"/></div>
+    <div class="fg"><label class="flbl">Ssenariy</label><textarea id="m-scenario">${esc(t.scenario||'')}</textarea></div>
+    <div class="fg"><label class="flbl">Deadline</label><input type="datetime-local" id="m-deadline" value="${dlStr}"/></div>
+    <div class="fg">
+      <label class="flbl">Havolalar</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px"><input type="url" id="m-link-inp" placeholder="https://..." style="flex:1"/><button class="btn btn-gh btn-sm" type="button" onclick="addLink()">+ Qo'shish</button></div>
+      <div id="links-wrap" style="display:flex;flex-wrap:wrap;gap:5px">${renderLinks()}</div>
+    </div>
+    <div class="fg"><label class="flbl">Material faylini almashtirish</label>
+      ${t.matUrl?`<div style="font-size:12px;color:var(--tx2);margin-bottom:5px">Hozirgi: ${esc(t.matName||'fayl')}</div>`:''}
+      <input type="file" id="m-file" accept="video/*,audio/*,image/*" onchange="const f=this.files[0];if(f){const i=$$('m-finfo');if(i){i.style.display='block';i.innerHTML='✓ '+esc(f.name);}}"/>
+      <div id="m-finfo" style="display:none;margin-top:5px;font-size:12px;color:var(--gr)"></div>
+      <div id="m-prog" class="prog-wrap"><div class="prog-bar" id="m-prog-bar"></div></div>
+    </div>
+    <div id="m-err" class="err-msg"></div>
+    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-pr" id="edit-btn" onclick="saveEditTask('${id}')">Saqlash</button></div>
+  </div></div>`;render();
+}
+
+async function saveEditTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  const ttl=$$('m-ttl')?.value.trim();if(!ttl)return;
+  const btn=$$('edit-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';}
+  const file=$$('m-file')?.files?.[0];
+  if(file){
+    try{if(t.matPath)await delFile(t.matPath);const r=await uploadFile(file,'m-prog');t.matUrl=r.url;t.matName=r.name;t.matPath=r.path;}
+    catch(e){const er=$$('m-err');if(er){er.style.display='block';er.textContent='Xatolik: '+e.message;}if(btn){btn.disabled=false;btn.textContent='Saqlash';}return;}
+  }
+  t.title=ttl;t.scenario=$$('m-scenario')?.value.trim()||null;
+  t.projectId=$$('m-prj').value;t.assignedTo=$$('m-ed').value;
+  t.links=[..._taskLinks];
+  const dlVal=$$('m-deadline')?.value;t.deadline=dlVal?new Date(dlVal).getTime():null;
+  await cloudSave();modalFn=null;showNotice('Topshiriq yangilandi ✓');
+}
+
+// ══ SUBMIT WORK ══
+function openSubmit(id){
+  const t=tasks.find(x=>x.id===id);
+  modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">${t.status==='corrections'?'To\'g\'irlangan video':'Tayyor videoni yuborish'} <button class="modal-x" onclick="closeModal()">✕</button></div>
+    ${t.corrections?`<div style="background:var(--ord);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:12px;color:var(--or)">${esc(t.corrections)}</div>`:''}
+    <div class="fg"><label class="flbl">Video/fayl yuklang</label>
+      <input type="file" id="s-file" accept="video/*,audio/*,image/*" onchange="const f=this.files[0];if(f){const i=$$('s-finfo');if(i){i.style.display='block';i.textContent='✓ '+f.name+' ('+fsize(f.size)+')';}}"/>
+      <div id="s-finfo" style="display:none;margin-top:6px;font-size:12px;color:var(--gr);font-weight:500"></div>
+      <div id="s-prog" class="prog-wrap"><div class="prog-bar" id="s-prog-bar"></div></div>
+    </div>
+    <div id="s-err" class="err-msg"></div>
+    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-gr" id="sub-btn" onclick="submitWork('${id}')">↑ Yuborish</button></div>
+  </div></div>`;render();
+}
+
+async function submitWork(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  const file=$$('s-file')?.files?.[0];
+  if(!file&&!t.subUrl){alert('Iltimos fayl yuklang');return;}
+  const btn=$$('sub-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Yuklanmoqda...';}
+  if(file){
+    if(t.subPath)await delFile(t.subPath);
+    try{const r=await uploadFile(file,'s-prog');t.subUrl=r.url;t.subName=r.name;t.subPath=r.path;t.subFiles=[{url:r.url,name:r.name,path:r.path}];}
+    catch(e){const er=$$('s-err');if(er){er.style.display='block';er.textContent='Xatolik: '+e.message;}if(btn){btn.disabled=false;btn.textContent='Yuborish';}return;}
+  }
+  t.status='submitted';
+  // corrections saqlanadi — tekshiruvchi ko'rishi uchun
+  await cloudSave();modalFn=null;showNotice('Video tekshirishga yuborildi ✓');
+}
+
+// ══ CORRECTIONS ══
+function openCorrect(id){
+  const t=tasks.find(x=>x.id===id);
+  modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Pravka qo'shish <button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div style="background:var(--sur2);border-radius:8px;padding:8px 11px;font-size:13px;font-weight:500;margin-bottom:14px">${esc(t.title)}</div>
+    <div class="fg"><label class="flbl">Nima to'g'irlanishi kerak</label><textarea id="m-cor" placeholder="Batafsil yozing...">${esc(t.corrections||'')}</textarea></div>
+    <div class="fg"><label class="flbl">Rasm/video qo'shing (ixtiyoriy)</label>
+      <input type="file" id="corr-file" accept="image/*,video/*,audio/*" onchange="const f=this.files[0];if(f){const i=$$('corr-finfo');if(i){i.style.display='block';i.textContent='✓ '+f.name;}}"/>
+      <div id="corr-finfo" style="display:none;margin-top:5px;font-size:12px;color:var(--pr)"></div>
+      <div id="corr-prog" class="prog-wrap"><div class="prog-bar" id="corr-prog-bar"></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-or" id="corr-btn" onclick="saveCorrect('${id}')">Pravka yuborish</button></div>
+  </div></div>`;render();
+}
+
+async function saveCorrect(id){
+  const t=tasks.find(x=>x.id===id);const cor=$$('m-cor')?.value.trim();
+  if(!cor){$$('m-cor')?.focus();return;}
+  const btn=$$('corr-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';}
+  const file=$$('corr-file')?.files?.[0];let corrFiles=[];
+  if(file){try{const r=await uploadFile(file,'corr-prog');corrFiles=[{url:r.url,name:r.name,path:r.path}];}catch(e){console.warn(e);}}
+  if(t){t.status='corrections';t.corrections=cor;t.corrChecker=cu.id;t.corrFiles=corrFiles;}
+  await cloudSave();modalFn=null;showNotice('Pravkalar yuborildi');
+}
+
+// ══ TASK ACTIONS ══
+async function approveT(id){const t=tasks.find(x=>x.id===id);if(t){t.status='approved';}await cloudSave();showNotice('Video tasdiqlandi ✓');}
+async function doStart(id){const t=tasks.find(x=>x.id===id);if(t)t.status='in_progress';await cloudSave();render();}
+async function delT(id){
+  if(!confirm('Bu topshiriqni o\'chirishni tasdiqlaysizmi?'))return;
+  const t=tasks.find(x=>x.id===id);
+  if(t){await delFile(t.matPath);await delFile(t.subPath);for(const f of(t.subFiles||[]))await delFile(f.path);for(const f of(t.corrFiles||[]))await delFile(f.path);}
+  tasks=tasks.filter(x=>x.id!==id);selectedTask=null;await cloudSave();render();
+}
+async function setTaskStatus(id,status){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  if(!confirm('Statusni o\'zgartirish?'))return;
+  t.status=status;if(status==='approved')t.corrections='';
+  await cloudSave();showNotice('Status yangilandi ✓');
+}
+
+// ══ ANALYTICS ══
+function analyticsPageHTML(){
+  const TZ=5*3600*1000,now=Date.now();
+  const todayS=Math.floor((now+TZ)/86400000)*86400000-TZ;
+  const weekS=todayS-6*86400000,monthS=todayS-29*86400000;
+  const pS=analyticsPeriod==='day'?todayS:analyticsPeriod==='week'?weekS:analyticsPeriod==='month'?monthS:0;
+  const pL=analyticsPeriod==='day'?'Bugun':analyticsPeriod==='week'?'Bu hafta':analyticsPeriod==='month'?'Bu oy':'Barchasi';
+  const apAll=tasks.filter(t=>t.status==='approved');
+  const apP=apAll.filter(t=>t.createdAt>=pS);
+  const editors=users.filter(u=>u.role==='editor');
+  const maxBar=Math.max(1,...editors.map(e=>tasks.filter(t=>t.assignedTo===e.id&&t.status==='approved'&&t.createdAt>=pS).length));
+  const edRows=editors.map(e=>{
+    const done=tasks.filter(t=>t.assignedTo===e.id&&t.status==='approved'&&t.createdAt>=pS).length;
+    const total=tasks.filter(t=>t.assignedTo===e.id&&t.createdAt>=pS).length;
+    const active=tasks.filter(t=>t.assignedTo===e.id&&['new','in_progress','corrections'].includes(t.status)).length;
+    const todayDone=tasks.filter(t=>t.assignedTo===e.id&&t.status==='approved'&&t.createdAt>=todayS).length;
+    const todaySub=tasks.filter(t=>t.assignedTo===e.id&&t.status==='submitted'&&t.createdAt>=todayS).length;
+    const isG=todayDone>0||todaySub>0,isR=!isG&&active>0;
+    const sc=isG?'var(--gr)':isR?'var(--rd)':'var(--tx2)';
+    const sb2=isG?'var(--grd)':isR?'var(--rdd)':'var(--sur3)';
+    const si=isG?'✓':isR?'!':'—';
+    const bp=maxBar>0?Math.round(done/maxBar*100):0;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--sep)">
+      <div style="display:flex;align-items:center;gap:10px;width:140px;flex-shrink:0">${avatarHTML(e.id,30)}<div><div style="font-size:13px;font-weight:600">${esc(e.name)}</div><div style="font-size:11px;color:var(--tx2)">${done} tayyor</div></div></div>
+      <div style="flex:1"><div class="mbar-wrap"><div class="mbar" style="width:${bp}%"></div></div><div style="font-size:11px;color:var(--tx2);margin-top:3px">Jami: ${total} · Tayyor: ${done} · Jarayonda: ${active}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="font-size:18px;font-weight:700;color:${sc}">${done}</div><div style="width:26px;height:26px;border-radius:50%;background:${sb2};color:${sc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">${si}</div></div>
+    </div>`;
+  }).join('');
+  const days=[],dL=[];
+  for(let i=6;i>=0;i--){const ds=todayS-i*86400000;const de=ds+86400000;days.push(tasks.filter(t=>t.status==='approved'&&t.createdAt>=ds&&t.createdAt<de).length);const d=new Date(ds+TZ);dL.push(d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'}));}
+  const stC=['new','in_progress','submitted','corrections','approved'].map(s=>tasks.filter(t=>t.status===s).length);
+  return`<div class="page-in">
+  <div class="sec-hdr">
+    <div><div class="pg-title">Statistika</div><div class="pg-sub">Video ishlab chiqarish</div></div>
+    <div class="seg">${[['all','Barchasi'],['month','Oy'],['week','Hafta'],['day','Bugun']].map(([k,l])=>`<button class="seg-b ${analyticsPeriod===k?'on':''}" onclick="analyticsPeriod='${k}';render()">${l}</button>`).join('')}</div>
+  </div>
+  <div class="stats-row" style="margin-bottom:16px">
+    <div class="stat-card"><div class="stat-n">${apAll.length}</div><div class="stat-l">Jami tayyor</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--pr)">${apP.length}</div><div class="stat-l">${pL}</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--gr)">${editors.filter(e=>tasks.filter(t=>t.assignedTo===e.id&&t.createdAt>=todayS&&['approved','submitted'].includes(t.status)).length>0).length}</div><div class="stat-l">Bugun faol</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--or)">${tasks.filter(t=>['new','in_progress','corrections'].includes(t.status)).length}</div><div class="stat-l">Jarayonda</div></div>
+  </div>
+  <div class="an-grid" style="margin-bottom:12px">
+    <div class="chart-card"><div class="chart-ttl">So'nggi 7 kun</div><canvas id="wchart" height="160"></canvas></div>
+    <div class="chart-card"><div class="chart-ttl">Status taqsimoti</div><canvas id="pchart" height="160"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="chart-ttl" style="margin-bottom:0">Montajerlar — ${pL}</div>
+      <div style="display:flex;gap:12px;font-size:11px"><span style="color:var(--gr)">● Faol</span><span style="color:var(--rd)">● Kutilmoqda</span><span style="color:var(--tx3)">● Topshiriq yo'q</span></div>
+    </div>
+    ${edRows||'<div style="padding:20px;text-align:center;color:var(--tx2);font-size:13px">Montajerlar yo\'q</div>'}
+  </div>
+  </div>
+  <scr`+`ipt>(function(){
+    const wc=document.getElementById('wchart'),pc=document.getElementById('pchart');if(!wc||!pc||typeof Chart==='undefined')return;
+    const dk=document.documentElement.getAttribute('data-theme')==='dark';
+    const tc=dk?'rgba(245,245,247,.55)':'rgba(26,26,30,.5)',gc=dk?'rgba(245,245,247,.07)':'rgba(26,26,30,.07)';
+    Chart.defaults.color=tc;Chart.defaults.borderColor=gc;Chart.defaults.font.family='-apple-system,Inter,system-ui,sans-serif';
+    new Chart(wc,{type:'bar',data:{labels:${str(dL)},datasets:[{data:${str(days)},backgroundColor:'rgba(204,120,92,.55)',borderColor:'#CC785C',borderWidth:1.5,borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+    new Chart(pc,{type:'doughnut',data:{labels:['Yangi','Jarayonda','Tekshirishda','Pravkada','Tayyor'],datasets:[{data:${str(stC)},backgroundColor:['#3a3a3c','#0A84FF','#30d158','#FF9500','#CC785C'],borderWidth:0,hoverOffset:5}]},options:{responsive:true,cutout:'65%',plugins:{legend:{position:'right',labels:{boxWidth:10,padding:12,font:{size:11}}}}}});
+  })();</scr`+`ipt>`;
+}
+
+// ══ PROFILE ══
+function profilePageHTML(){
+  const u=cu;
+  return`<div class="page-in"><div class="sec-hdr"><div><div class="pg-title">Profil</div></div></div>
+  <div style="max-width:500px">
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div class="prof-pic-wrap">
+          ${u.pic?`<img src="${esc(u.pic)}" class="big-av"/>`:`<div class="big-av" style="${AVC[u.role]};display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700">${initials(u.name)}</div>`}
+          <input type="file" accept="image/*" onchange="uploadPic(this)"/>
+        </div>
+        <div><div style="font-size:18px;font-weight:700">${esc(u.name)}</div><div style="font-size:13px;color:var(--tx2);margin-top:3px">${ROLES[u.role]||u.role}</div><div style="font-size:12px;color:var(--tx3);margin-top:2px">@${esc(u.username)}</div></div>
+      </div>
+      <div class="sep-line"></div>
+      <div class="fg"><label class="flbl">Ism</label><input type="text" id="prof-nm" value="${esc(u.name)}"/></div>
+      <div class="fg"><label class="flbl">Parol (o'zgartirish uchun)</label><input type="password" id="prof-pw" placeholder="Yangi parol"/></div>
+      <div id="prof-err" style="font-size:12px;color:var(--rd);display:none;margin-bottom:8px"></div>
+      <button class="btn btn-pr btn-sm" onclick="saveProfile()">Saqlash</button>
+    </div>
+  </div></div>`;
+}
+async function uploadPic(input){const file=input.files?.[0];if(!file)return;if(file.size>5*1024*1024){alert('5MB dan kichik bo\'lsin');return;}try{const r=await uploadFile(file,null);cu.pic=r.url;const u=users.find(x=>x.id===cu.id);if(u)u.pic=r.url;await cloudSave();showNotice('Rasm yangilandi ✓');}catch(e){alert('Xatolik: '+e.message);}}
+async function saveProfile(){const nm=$$('prof-nm')?.value.trim(),pw=$$('prof-pw')?.value.trim(),er=$$('prof-err');if(!nm){if(er){er.style.display='block';er.textContent='Ism bo\'sh bo\'lmasin';}return;}cu.name=nm;if(pw)cu.pass=pw;const u=users.find(x=>x.id===cu.id);if(u){u.name=nm;if(pw)u.pass=pw;}await cloudSave();showNotice('Profil yangilandi ✓');}
+
+// ══ ADMIN ══
+function adminPageHTML(){
+  const eds=users.filter(u=>u.role==='editor'),chks=users.filter(u=>u.role==='checker'),adms=users.filter(u=>u.role==='admin');
+  const uTbl=(list,ttl)=>list.length?`<div class="proj-sep">${ttl}</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Foydalanuvchi</th><th>Login</th><th>Parol</th><th>Rol</th><th></th></tr></thead><tbody>${list.map(u=>`<tr><td><div style="display:flex;align-items:center;gap:8px">${avatarHTML(u.id,26)}<span style="font-weight:600">${esc(u.name)}</span></div></td><td><code>${esc(u.username)}</code></td><td><code>${esc(u.pass)}</code></td><td>${roleBadge(u.role)}</td><td><div style="display:flex;gap:5px"><button class="btn btn-gh btn-xs" onclick="openEditUser('${u.id}')">✎</button>${u.id!==cu.id&&u.role!=='admin'?`<button class="btn btn-rd btn-xs" onclick="deleteUser('${u.id}')">✕</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`:'';
+  const prows=projects.map(p=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:${p.color};display:inline-block"></span><span style="font-weight:600">${esc(p.name)}</span></div></td><td>${tasks.filter(t=>t.projectId===p.id).length} ta</td><td><div style="display:flex;gap:5px"><button class="btn btn-gh btn-xs" onclick="openEditProj('${p.id}')">✎</button><button class="btn btn-rd btn-xs" onclick="deleteProj('${p.id}')">✕</button></div></td></tr>`).join('');
+  return`<div class="page-in"><div class="sec-hdr"><div><div class="pg-title">Admin paneli</div></div><div style="display:flex;gap:8px"><button class="btn btn-pr btn-sm" onclick="openAddUser()">+ Foydalanuvchi</button><button class="btn btn-gh btn-sm" onclick="openAddProj()">+ Proyekt</button></div></div>
+  <div class="proj-sep">Proyektlar</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nom</th><th>Topshiriqlar</th><th></th></tr></thead><tbody>${prows}</tbody></table></div>
+  ${uTbl(eds,'Montajerlar')}${uTbl(chks,'Tekshiruvchilar')}${uTbl(adms,'Adminlar')}</div>`;
+}
+
+function colorPicker(sc){return`<div class="colors">${P_COLORS.map(c=>`<div class="c-opt ${c===sc?'sel':''}" style="background:${c}" onclick="selC('${c}',this)"></div>`).join('')}</div>`;}
+function selC(c,el){_selColor=c;document.querySelectorAll('.c-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function openAddProj(){_selColor='#CC785C';modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()"><div class="modal-title">Yangi proyekt <button class="modal-x" onclick="closeModal()">✕</button></div><div class="fg"><label class="flbl">Nom</label><input type="text" id="pj-n" placeholder="Proyekt nomi"/></div><div class="fg"><label class="flbl">Rang</label>${colorPicker('#CC785C')}</div><div id="pj-err" class="err-msg"></div><div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-pr" onclick="addProj()">Qo'shish</button></div></div></div>`;render();}
+async function addProj(){const nm=$$('pj-n')?.value.trim(),er=$$('pj-err');if(!nm){if(er){er.style.display='block';er.textContent='Nom kiriting';}return;}projects.push({id:'p'+Date.now(),name:nm,color:_selColor});await cloudSave();modalFn=null;showNotice('Proyekt qo\'shildi ✓');}
+function openEditProj(id){const p=projects.find(x=>x.id===id);if(!p)return;_selColor=p.color||'#CC785C';modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()"><div class="modal-title">Proyektni tahrirlash <button class="modal-x" onclick="closeModal()">✕</button></div><div class="fg"><label class="flbl">Nom</label><input type="text" id="pj-n" value="${esc(p.name)}"/></div><div class="fg"><label class="flbl">Rang</label>${colorPicker(p.color)}</div><div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-pr" onclick="saveProj('${id}')">Saqlash</button></div></div></div>`;render();}
+async function saveProj(id){const p=projects.find(x=>x.id===id),nm=$$('pj-n')?.value.trim();if(!nm||!p)return;p.name=nm;p.color=_selColor;await cloudSave();modalFn=null;showNotice('Proyekt yangilandi ✓');}
+async function deleteProj(id){const p=projects.find(x=>x.id===id);if(!p)return;const cnt=tasks.filter(t=>t.projectId===id).length;if(!confirm(`"${p.name}" o'chirilsinmi?${cnt?' '+cnt+' ta topshiriq ham o\'chadi!':''}`))return;projects=projects.filter(x=>x.id!==id);tasks=tasks.filter(t=>t.projectId!==id);await cloudSave();render();}
+function uModal(ttl,vals,action){return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()"><div class="modal-title">${ttl} <button class="modal-x" onclick="closeModal()">✕</button></div><div class="fg"><label class="flbl">Ism</label><input type="text" id="fu-n" value="${esc(vals.name||'')}" placeholder="Ism"/></div><div class="fg"><label class="flbl">Login</label><input type="text" id="fu-u" value="${esc(vals.username||'')}" placeholder="login"/></div><div class="fg"><label class="flbl">Parol</label><input type="text" id="fu-p" value="${esc(vals.pass||'')}" placeholder="parol"/></div><div class="fg"><label class="flbl">Rol</label><select id="fu-r"><option value="editor" ${vals.role==='editor'?'selected':''}>Montajer</option><option value="checker" ${vals.role==='checker'?'selected':''}>Tekshiruvchi</option><option value="admin" ${vals.role==='admin'?'selected':''}>Admin</option></select></div><div id="fu-err" class="err-msg"></div><div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-pr" onclick="${action}">Saqlash</button></div></div></div>`;}
+function openAddUser(){modalFn=()=>uModal('Yangi foydalanuvchi',{},'addUser()');render();}
+async function addUser(){const n=$$('fu-n')?.value.trim(),u=$$('fu-u')?.value.trim(),p=$$('fu-p')?.value.trim(),r=$$('fu-r')?.value,er=$$('fu-err');if(!n||!u||!p){if(er){er.style.display='block';er.textContent='Barcha maydonlarni to\'ldiring';}return;}if(users.find(x=>x.username===u)){if(er){er.style.display='block';er.textContent='Bu login band';}return;}users.push({id:'u'+Date.now(),name:n,username:u,pass:p,role:r,pic:null});await cloudSave();modalFn=null;showNotice('Foydalanuvchi qo\'shildi ✓');}
+function openEditUser(id){const u=users.find(x=>x.id===id);if(!u)return;modalFn=()=>uModal('Tahrirlash',u,`editUser('${id}')`);render();}
+async function editUser(id){const u=users.find(x=>x.id===id);if(!u)return;const n=$$('fu-n')?.value.trim(),un=$$('fu-u')?.value.trim(),p=$$('fu-p')?.value.trim(),r=$$('fu-r')?.value,er=$$('fu-err');if(!n||!un||!p){if(er){er.style.display='block';er.textContent='Barcha maydonlarni to\'ldiring';}return;}if(users.find(x=>x.username===un&&x.id!==id)){if(er){er.style.display='block';er.textContent='Bu login band';}return;}u.name=n;u.username=un;u.pass=p;u.role=r;if(cu.id===id)cu=u;await cloudSave();modalFn=null;showNotice('Foydalanuvchi yangilandi ✓');}
+async function deleteUser(id){const u=users.find(x=>x.id===id);if(!u)return;if(!confirm(`${u.name}ni o'chirishni tasdiqlaysizmi?`))return;users=users.filter(x=>x.id!==id);await cloudSave();render();}
+
+// ══ CHAT ══
+async function loadChat(){
+  if(!cu||!chatWith)return;
+  try{
+    const{data,error}=await sb.from('messages').select('*')
+      .or(`and(from_id.eq.${cu.id},to_id.eq.${chatWith}),and(from_id.eq.${chatWith},to_id.eq.${cu.id})`)
+      .order('created_at',{ascending:true}).limit(300);
+    if(error)throw error;
+    chatMessages=(data||[]).map(r=>({id:r.id,from:r.from_id,to:r.to_id,text:r.text||'',type:r.type||'text',fileUrl:r.file_url,fileName:r.file_name,ts:new Date(r.created_at).getTime()}));
+  }catch(e){console.warn(e);}
+}
+async function sendMsg(text,fileUrl,fileName,type){
+  if(!cu||!chatWith)return;
+  try{await sb.from('messages').insert({from_id:cu.id,to_id:chatWith,text:text||'',type:type||'text',file_url:fileUrl||null,file_name:fileName||null});}
+  catch(e){console.warn(e);}
+}
+function toggleChat(){
+  chatOpen=!chatOpen;
+  if(!chatOpen){const cp=document.querySelector('.chat-panel');if(cp)cp.remove();chatWith=null;stopChatPoll();}
+  else renderChatFab();
+  renderChatFab();
+}
+function startChatPoll(){
+  if(chatPollTimer)return;
+  chatPollTimer=setInterval(async()=>{
+    if(!chatOpen||!chatWith)return;
+    const prev=chatMessages.length;
+    await loadChat();
+    if(chatMessages.length>prev){const c=document.querySelector('.chat-msgs');if(c){c.innerHTML=buildMsgs();c.scrollTop=c.scrollHeight;}}
+  },3000);
+}
+function stopChatPoll(){if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null;}}
+function openChatWith(uid){chatWith=uid;chatMessages=[];loadChat().then(()=>{renderChatPanel();startChatPoll();});}
+function backToList(){chatWith=null;chatMessages=[];stopChatPoll();renderChatPanel();}
+function renderChatFab(){
+  let fab=document.querySelector('.chat-fab');
+  if(!fab){fab=document.createElement('button');fab.className='chat-fab';fab.onclick=toggleChat;document.body.appendChild(fab);}
+  fab.innerHTML='💬';
+  if(!chatOpen){const cp=document.querySelector('.chat-panel');if(cp)cp.remove();return;}
+  renderChatPanel();
+}
+function renderChatPanel(){
+  let cp=document.querySelector('.chat-panel');
+  if(!cp){cp=document.createElement('div');cp.className='chat-panel';document.body.appendChild(cp);}
+  if(!chatWith){
+    const people=users.filter(u=>u.id!==cu.id);
+    cp.innerHTML=`<div class="chat-hdr"><span style="font-size:18px">💬</span><div class="chat-ttl">Xabarlar</div><button class="ic-btn" onclick="toggleChat()" style="width:26px;height:26px">✕</button></div>
+    <div class="chat-people">${people.map(p=>`<div class="chat-person" onclick="openChatWith('${p.id}')">${avatarHTML(p.id,32)}<div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(p.name)}</div><div style="font-size:11px;color:var(--tx2)">${ROLES[p.role]||p.role}</div></div><span style="color:var(--tx3);font-size:14px">›</span></div>`).join('')}</div>`;
+    return;
+  }
+  const other=users.find(u=>u.id===chatWith);
+  cp.innerHTML=`<div class="chat-hdr"><button class="chat-ic-btn" onclick="backToList()" style="font-size:18px">←</button>${avatarHTML(chatWith,26)}<div class="chat-ttl">${esc(other?.name||'Chat')}</div><button class="ic-btn" onclick="toggleChat()" style="width:26px;height:26px">✕</button></div>
+  <div class="chat-msgs" id="chat-msgs">${buildMsgs()}</div>
+  <div id="sticker-tray" style="display:none;border-top:.5px solid var(--sep);overflow-x:auto"><div class="sticker-grid">${['😀','😂','🔥','❤️','👍','✅','🎬','🎵','⚡','🌟','💯','🎉','😎','🤔','💪','👏','🙏','😅','🤩','😤'].map(s=>`<button class="sticker-btn" onclick="sendSticker('${s}')">${s}</button>`).join('')}</div></div>
+  <div class="chat-inp-bar">
+    <button class="chat-ic-btn" onclick="toggleStickers()">😊</button>
+    <label style="cursor:pointer"><input type="file" id="chat-img" accept="image/*" style="display:none" onchange="sendChatImg()"/><div class="chat-ic-btn">🖼️</div></label>
+    <button class="chat-ic-btn ${chatRecording?'rec':''}" id="rec-btn" onclick="toggleRec()">🎙️</button>
+    <input class="chat-inp" id="chat-inp" placeholder="Xabar yozing..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTxt()}"/>
+    <button class="send-btn" onclick="sendTxt()">▶</button>
+  </div>`;
+  const msgs=cp.querySelector('#chat-msgs');if(msgs)msgs.scrollTop=msgs.scrollHeight;
+}
+function buildMsgs(){
+  let html='';let lastDay='';
+  chatMessages.forEach(m=>{
+    const d=new Date(m.ts).toLocaleDateString('ru',{day:'2-digit',month:'2-digit'});
+    if(d!==lastDay){html+=`<div class="chat-day">${d}</div>`;lastDay=d;}
+    const mine=m.from===cu?.id;
+    const u=users.find(x=>x.id===m.from);
+    const time=new Date(m.ts).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    let content='';
+    if(m.type==='text')content=`<div>${esc(m.text)}</div>`;
+    else if(m.type==='image')content=`<img src="${esc(m.fileUrl)}" class="msg-img" onclick="window.open('${esc(m.fileUrl)}')"/>`;
+    else if(m.type==='audio')content=`<audio controls class="msg-audio" src="${esc(m.fileUrl)}"></audio>`;
+    else if(m.type==='sticker')content=`<div style="font-size:40px">${m.text}</div>`;
+    html+=`<div class="msg ${mine?'mine':''}">
+      ${!mine?avatarHTML(m.from,24):''}
+      <div><div class="msg-name">${mine?'Men':esc(u?.name||'?')}</div><div class="msg-bubble">${content}</div></div>
+      <div class="msg-time">${time}</div>
+    </div>`;
+  });
+  return html;
+}
+function toggleStickers(){const t=$$('sticker-tray');if(t)t.style.display=t.style.display==='none'?'block':'none';}
+async function sendSticker(s){await sendMsg(s,null,null,'sticker');chatMessages.push({id:'loc'+Date.now(),from:cu.id,text:s,type:'sticker',ts:Date.now()});renderChatPanel();}
+async function sendTxt(){const inp=$$('chat-inp');const txt=inp?.value.trim();if(!txt)return;inp.value='';const m={id:'loc'+Date.now(),from:cu.id,text:txt,type:'text',ts:Date.now()};chatMessages.push(m);renderChatPanel();await sendMsg(txt,null,null,'text');}
+async function sendChatImg(){const file=$$('chat-img')?.files?.[0];if(!file)return;try{const r=await uploadFile(file,null);await sendMsg('',r.url,r.name,'image');chatMessages.push({id:'loc'+Date.now(),from:cu.id,text:'',type:'image',fileUrl:r.url,fileName:r.name,ts:Date.now()});renderChatPanel();}catch(e){alert('Xatolik: '+e.message);}}
+async function deleteMsg(id){if(!confirm('Xabarni o\'chirishni tasdiqlaysizmi?'))return;try{await sb.from('messages').delete().eq('id',id);}catch{}chatMessages=chatMessages.filter(m=>m.id!==id);renderChatPanel();}
+async function toggleRec(){
+  if(chatRecording){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();chatRecording=false;const b=$$('rec-btn');if(b)b.classList.remove('rec');return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const chunks=[];mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+    mediaRecorder.onstop=async()=>{
+      const blob=new Blob(chunks,{type:'audio/webm'});
+      const file=new File([blob],'voice_'+Date.now()+'.webm',{type:'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      try{const r=await uploadFile(file,null);await sendMsg('',r.url,r.name,'audio');chatMessages.push({id:'loc'+Date.now(),from:cu.id,text:'',type:'audio',fileUrl:r.url,ts:Date.now()});renderChatPanel();}catch{}
+      chatRecording=false;const b=$$('rec-btn');if(b)b.classList.remove('rec');
+    };
+    mediaRecorder.start();chatRecording=true;const b=$$('rec-btn');if(b)b.classList.add('rec');
+  }catch{alert('Mikrofon ruxsati berilmadi');}
+}
+
+// ══ INIT ══
+async function autoMoveOverdue(){
+  const TZ=5*3600*1000,now=Date.now();
+  const todayS=Math.floor((now+TZ)/86400000)*86400000-TZ;
+  let changed=false;
+  tasks.forEach(t=>{
+    if(t.deadline&&t.deadline<todayS&&!['approved','submitted'].includes(t.status)){
+      const dayTime=t.deadline%86400000;t.deadline=todayS+86400000+(dayTime>0?dayTime:0);changed=true;
+    }
+  });
+  if(changed)await cloudSave();
+}
+
+async function init(){
+  const th=localStorage.getItem('kz_th')||'dark';
+  document.documentElement.setAttribute('data-theme',th);
+  await cloudLoad();
+  await autoMoveOverdue();
+  const sid=localStorage.getItem('kz_s');
+  if(sid)cu=users.find(u=>u.id===sid)||null;
+  render();
+  setTimeout(renderChatFab,300);
+  setInterval(async()=>{
+    if(modalFn||isUploading)return;
+    const pT=JSON.stringify(tasks),pU=JSON.stringify(users.map(u=>u.id+u.name+u.role));
+    await cloudLoad();
+    const nT=JSON.stringify(tasks),nU=JSON.stringify(users.map(u=>u.id+u.name+u.role));
+    if(pT!==nT||pU!==nU){
+      if(cu&&!modalFn){const f=users.find(u=>u.id===cu.id);if(f)cu=f;render();}
+    }else{const dot=document.querySelector('.sdot');if(dot)dot.className='sdot s-ok';}
+  },5000);
+}
+init();
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+(function(){const el=document.createElement('div');el.className='powered';el.textContent='Powered by creatandcook';document.body.appendChild(el);})();
+</script>
+</body>
+</html>
