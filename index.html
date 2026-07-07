@@ -24,7 +24,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-u
 .logo-m{width:28px;height:28px;background:linear-gradient(135deg,var(--pr),var(--te));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .sb-nav{flex:1;overflow-y:auto;padding:6px 0}
 .nav-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);padding:8px 14px 4px}
-.ni{display:flex;align-items:center;gap:8px;padding:7px 12px;margin:1px 6px;border-radius:8px;cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;overflow:hidden;border:none;background:none;width:calc(100% - 12px);text-align:left;font-family:inherit}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 12px;margin:1px 6px;border-radius:8px;cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;overflow:hidden;border:none;background:none;width:calc(100% - 12px);text-align:left;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .ni:hover{background:var(--sur2);color:var(--tx)}.ni.on{background:var(--prd);color:var(--pr)}
 .ni-ic{font-size:15px;flex-shrink:0;width:20px;text-align:center}
 .ni-tx{flex:1;overflow:hidden;text-overflow:ellipsis}
@@ -37,7 +37,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-u
 .topbar{height:48px;background:rgba(17,17,19,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:.5px solid var(--sep);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0}
 .tb-title{font-size:15px;font-weight:700;flex:1}
 .tb-r{display:flex;align-items:center;gap:6px}
-.ic-btn{width:30px;height:30px;border-radius:7px;background:var(--sur2);border:.5px solid var(--sep2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--tx);transition:all .15s}
+.ic-btn{width:30px;height:30px;border-radius:7px;background:var(--sur2);border:.5px solid var(--sep2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--tx);transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .ic-btn:hover{background:var(--sur3)}.ic-btn:active{transform:scale(.92)}
 .sdot{width:6px;height:6px;border-radius:50%}.s-ok{background:var(--gr)}.s-err{background:var(--rd)}.s-ing{background:var(--or);animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -88,7 +88,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-u
 .dp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin-bottom:6px}
 .dp-foot{padding:12px 16px;border-top:.5px solid var(--sep);display:flex;flex-direction:column;gap:6px}
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit;border-radius:8px;border:none;cursor:pointer;transition:all .16s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit;border-radius:8px;border:none;cursor:pointer;transition:all .16s;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
 .btn:active{transform:scale(.94)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn-pr{background:var(--pr);color:#fff;box-shadow:0 2px 10px rgba(204,120,92,.35)}.btn-pr:hover{background:var(--prl)}
 .btn-gr{background:var(--gr);color:#fff;box-shadow:0 2px 10px rgba(52,199,89,.3)}.btn-gr:hover{filter:brightness(1.1)}
@@ -107,8 +107,8 @@ input[type=file]{display:block;width:100%;padding:10px;background:var(--sur2);bo
 .prog-wrap{background:var(--sur3);border-radius:3px;height:3px;overflow:hidden;margin-top:8px;display:none}
 .prog-bar{height:100%;border-radius:3px;width:0;background:linear-gradient(90deg,var(--pr),var(--te));transition:width .3s}
 /* MODAL */
-.overlay{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);animation:fadeUp .2s both}
-.modal{background:var(--sur);border:.5px solid var(--sep2);border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh3);animation:springIn .28s ease both}
+.overlay{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);animation:fadeUp .2s both;-webkit-overflow-scrolling:touch;touch-action:manipulation;overflow-y:auto}
+.modal{background:var(--sur);border:.5px solid var(--sep2);border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:var(--sh3);animation:springIn .28s ease both;-webkit-overflow-scrolling:touch;position:relative}
 .modal-lg{max-width:640px}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
 .modal-x{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:18px;padding:2px}
@@ -689,49 +689,92 @@ async function saveEditTask(id){
 
 // ══ SUBMIT WORK ══
 function openSubmit(id){
+  window._pFiles=window._pFiles||[];
+  window._pFiles=[];
   const t=tasks.find(x=>x.id===id);
+  function renderFileList(){
+    const fl=window._pFiles||[];
+    return fl.length?fl.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur2);border:.5px solid var(--sep);border-radius:8px;margin-top:6px">
+      <span style="font-size:18px">${fIcon(f.name)}</span>
+      <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</span>
+      <span style="font-size:11px;color:var(--tx2);flex-shrink:0">${fsize(f.size)}</span>
+      <button onclick="pfRemove(${i});event.stopPropagation()" style="background:none;border:none;cursor:pointer;color:var(--rd);font-size:18px;padding:0 2px;line-height:1;flex-shrink:0;touch-action:manipulation">✕</button>
+    </div>`).join(''):'<div style="font-size:12px;color:var(--tx2);text-align:center;padding:8px">Hali fayl qo\'shilmagan</div>';
+  }
   modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">${t.status==='corrections'?'To\'g\'irlangan video':'Tayyor videoni yuborish'} <button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-title">${t.status==='corrections'?"To\'g\'irlangan video":"Tayyor videoni yuborish"} <button class="modal-x" onclick="closeModal()">✕</button></div>
     ${t.corrections?`<div style="background:var(--ord);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:12px;color:var(--or)">${esc(t.corrections)}</div>`:''}
-    <div class="fg"><label class="flbl">Video/fayl yuklang</label>
-      <input type="file" id="s-file" accept="video/*,audio/*,image/*" onchange="const f=this.files[0];if(f){const i=$$('s-finfo');if(i){i.style.display='block';i.textContent='✓ '+f.name+' ('+fsize(f.size)+')';}}"/>
-      <div id="s-finfo" style="display:none;margin-top:6px;font-size:12px;color:var(--gr);font-weight:500"></div>
-      <div id="s-prog" class="prog-wrap"><div class="prog-bar" id="s-prog-bar"></div></div>
+    <div class="fg">
+      <label class="flbl">Fayllar</label>
+      <div id="pf-list">${renderFileList()}</div>
+      <button type="button" onclick="document.getElementById('pf-inp').click()" class="btn btn-gh btn-full" style="margin-top:8px;touch-action:manipulation">
+        + Fayl qo\'shish (video, audio, rasm)
+      </button>
+      <input type="file" id="pf-inp" accept="video/*,audio/*,image/*" multiple style="display:none" onchange="pfAdd(this)"/>
+      <div style="font-size:11px;color:var(--tx2);margin-top:5px;text-align:center">Bir nechta tanlash uchun Ctrl ni bosib tanlang</div>
     </div>
     <div id="s-err" class="err-msg"></div>
-    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-gr" id="sub-btn" onclick="submitWork('${id}')">↑ Yuborish</button></div>
-  </div></div>`;render();
+    <div id="s-prog" class="prog-wrap"><div class="prog-bar" id="s-prog-bar"></div></div>
+    <div class="modal-foot">
+      <button class="btn btn-gh" onclick="closeModal()">Bekor</button>
+      <button class="btn btn-gr" id="sub-btn" onclick="submitWork('${id}')">${window._pFiles&&window._pFiles.length?`↑ ${window._pFiles.length} ta fayl yuborish`:'↑ Yuborish'}</button>
+    </div>
+  </div></div>`;
+  render();
 }
+
+function pfAdd(input){
+  if(!window._pFiles)window._pFiles=[];
+  Array.from(input.files||[]).forEach(f=>window._pFiles.push(f));
+  input.value='';
+  pfRefresh();
+}
+function pfRemove(i){
+  if(window._pFiles)window._pFiles.splice(i,1);
+  pfRefresh();
+}
+function pfRefresh(){
+  const fl=window._pFiles||[];
+  const list=document.getElementById('pf-list');
+  const btn=document.getElementById('sub-btn');
+  if(list){
+    list.innerHTML=fl.length?fl.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur2);border:.5px solid var(--sep);border-radius:8px;margin-top:6px">
+      <span style="font-size:18px">${fIcon(f.name)}</span>
+      <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</span>
+      <span style="font-size:11px;color:var(--tx2);flex-shrink:0">${fsize(f.size)}</span>
+      <button onclick="pfRemove(${i});event.stopPropagation()" style="background:none;border:none;cursor:pointer;color:var(--rd);font-size:18px;padding:0 2px;line-height:1;flex-shrink:0;touch-action:manipulation">✕</button>
+    </div>`).join(''):'<div style="font-size:12px;color:var(--tx2);text-align:center;padding:8px">Hali fayl qo\'shilmagan</div>';
+  }
+  if(btn){btn.textContent=fl.length?`↑ ${fl.length} ta fayl yuborish`:'↑ Yuborish';}
+}
+
 
 async function submitWork(id){
   const t=tasks.find(x=>x.id===id);if(!t)return;
-  const file=$$('s-file')?.files?.[0];
-  if(!file&&!t.subUrl){alert('Iltimos fayl yuklang');return;}
-  const btn=$$('sub-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Yuklanmoqda...';}
-  if(file){
+  const files=Array.from(window._pFiles||[]);
+  if(!files.length&&!t.subUrl){alert('Iltimos kamida bitta fayl qo\'shing');return;}
+  const btn=document.getElementById('sub-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Yuklanmoqda...';}
+  if(files.length){
     if(t.subPath)await delFile(t.subPath);
-    try{const r=await uploadFile(file,'s-prog');t.subUrl=r.url;t.subName=r.name;t.subPath=r.path;t.subFiles=[{url:r.url,name:r.name,path:r.path}];}
-    catch(e){const er=$$('s-err');if(er){er.style.display='block';er.textContent='Xatolik: '+e.message;}if(btn){btn.disabled=false;btn.textContent='Yuborish';}return;}
+    for(const sf of(t.subFiles||[]))await delFile(sf.path);
+    t.subFiles=[];t.subUrl=null;t.subName=null;t.subPath=null;
+    for(let i=0;i<files.length;i++){
+      if(btn)btn.innerHTML=`<span class="spinner"></span> ${i+1}/${files.length} yuklanmoqda...`;
+      try{
+        const r=await uploadFile(files[i],'s-prog');
+        t.subFiles.push({url:r.url,name:r.name,path:r.path});
+        if(i===0){t.subUrl=r.url;t.subName=r.name;t.subPath=r.path;}
+      }catch(e){
+        const er=document.getElementById('s-err');
+        if(er){er.style.display='block';er.textContent='Xatolik: '+e.message;}
+        if(btn){btn.disabled=false;btn.textContent='Yuborish';}return;
+      }
+    }
   }
+  window._pFiles=[];
   t.status='submitted';
-  // corrections saqlanadi — tekshiruvchi ko'rishi uchun
   await cloudSave();modalFn=null;showNotice('Video tekshirishga yuborildi ✓');
-}
-
-// ══ CORRECTIONS ══
-function openCorrect(id){
-  const t=tasks.find(x=>x.id===id);
-  modalFn=()=>`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Pravka qo'shish <button class="modal-x" onclick="closeModal()">✕</button></div>
-    <div style="background:var(--sur2);border-radius:8px;padding:8px 11px;font-size:13px;font-weight:500;margin-bottom:14px">${esc(t.title)}</div>
-    <div class="fg"><label class="flbl">Nima to'g'irlanishi kerak</label><textarea id="m-cor" placeholder="Batafsil yozing...">${esc(t.corrections||'')}</textarea></div>
-    <div class="fg"><label class="flbl">Rasm/video qo'shing (ixtiyoriy)</label>
-      <input type="file" id="corr-file" accept="image/*,video/*,audio/*" onchange="const f=this.files[0];if(f){const i=$$('corr-finfo');if(i){i.style.display='block';i.textContent='✓ '+f.name;}}"/>
-      <div id="corr-finfo" style="display:none;margin-top:5px;font-size:12px;color:var(--pr)"></div>
-      <div id="corr-prog" class="prog-wrap"><div class="prog-bar" id="corr-prog-bar"></div></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-gh" onclick="closeModal()">Bekor</button><button class="btn btn-or" id="corr-btn" onclick="saveCorrect('${id}')">Pravka yuborish</button></div>
-  </div></div>`;render();
 }
 
 async function saveCorrect(id){
