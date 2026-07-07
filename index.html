@@ -48,14 +48,14 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-u
 @keyframes springIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:rgba(28,28,32,.8);backdrop-filter:blur(12px);border:.5px solid var(--sep2);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;user-select:none}
+.stat-card{background:rgba(28,28,32,.8);backdrop-filter:blur(12px);border:.5px solid var(--sep2);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
 .stat-card.act{border-color:currentColor;box-shadow:0 0 0 1px currentColor}
 .stat-n{font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:1}
 .stat-l{font-size:12px;color:var(--tx2);margin-top:5px;font-weight:500}
 /* FILTERS */
 .filter-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.fchip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;border:.5px solid var(--sep);background:var(--sur);color:var(--tx2);cursor:pointer;transition:all .15s;font-family:inherit}
+.fchip{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;border:.5px solid var(--sep);background:var(--sur);color:var(--tx2);cursor:pointer;transition:all .15s;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .fchip:hover{background:var(--sur2);color:var(--tx)}.fchip.on{background:var(--prd);border-color:rgba(204,120,92,.35);color:var(--pr);font-weight:600}
 /* SEG BTNS */
 .seg{display:flex;gap:0;background:var(--sur2);border-radius:10px;padding:3px;border:.5px solid var(--sep2)}
@@ -63,8 +63,9 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,'Inter',system-u
 .seg-b.on{background:var(--pr);color:#fff;font-weight:600}
 /* TASKS */
 .task-list{display:flex;flex-direction:column;gap:6px}
-.task-item{background:rgba(26,26,30,.8);backdrop-filter:blur(10px);border:.5px solid var(--sep);border-radius:10px;padding:12px 14px;transition:all .2s;cursor:pointer}
+.task-item{background:rgba(26,26,30,.8);backdrop-filter:blur(10px);border:.5px solid var(--sep);border-radius:10px;padding:12px 14px;transition:all .2s;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(204,120,92,.15);user-select:none;display:block;appearance:none;-webkit-appearance:none}
 .task-item:hover{border-color:var(--sep2);transform:translateY(-1px);box-shadow:var(--sh)}
+.task-item:active{background:rgba(204,120,92,.1);transform:scale(.98)}
 .task-item.corr{border-left:3px solid var(--or)}
 .task-item.done{opacity:.55}
 .task-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
@@ -111,7 +112,7 @@ input[type=file]{display:block;width:100%;padding:10px;background:var(--sur2);bo
 .modal{background:var(--sur);border:.5px solid var(--sep2);border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:var(--sh3);animation:springIn .28s ease both;-webkit-overflow-scrolling:touch;position:relative}
 .modal-lg{max-width:640px}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
-.modal-x{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:18px;padding:2px}
+.modal-x{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:18px;padding:6px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
 .modal-x:hover{color:var(--tx)}
 .modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
 .sep-line{height:.5px;background:var(--sep2);margin:14px 0}
@@ -215,7 +216,7 @@ code{background:var(--sur2);padding:2px 6px;border-radius:5px;font-size:11px;fon
   .sb.mo::after{content:'';position:fixed;inset:0;left:220px;background:rgba(0,0,0,.5);z-index:-1}
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .an-grid{grid-template-columns:1fr}
-  .dp{position:fixed;right:-320px;top:0;bottom:0;z-index:300;transition:right .25s;width:300px}
+  .dp{position:fixed;right:-100vw;top:0;bottom:0;z-index:350;transition:right .25s;width:100vw;max-width:340px}
   .dp.mo{right:0}
   #sb-toggle{display:flex!important}
   .modal{margin:8px}
@@ -526,7 +527,7 @@ function toggleSC(k){activeStatCard=k;activeSt='all';render();}
 
 function taskItemHTML(t){
   const links=t.links||[];
-  return`<div class="task-item ${t.status==='corrections'?'corr':''} ${t.status==='approved'?'done':''}" onclick="openDP('${t.id}')">
+  return`<button class="task-item ${t.status==='corrections'?'corr':''} ${t.status==='approved'?'done':''}" onclick="openDP('${t.id}')" type="button" style="width:100%;text-align:left;font-family:inherit">
     <div class="task-top">
       <div style="flex:1;min-width:0">
         <div class="task-title">${esc(t.title)}</div>
@@ -541,11 +542,17 @@ function taskItemHTML(t){
       ${badge(t.status)}
     </div>
     ${t.scenario?`<div style="font-size:12px;color:var(--tx2);margin-top:5px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(t.scenario)}</div>`:''}
-  </div>`;
+  </button>`;
 }
 
 // ══ DETAIL PANEL ══
-function openDP(id){selectedTask=id;render();}
+function openDP(id){
+  selectedTask=id;render();
+  // On mobile, add .mo class to show detail panel
+  if(window.innerWidth<=768){
+    setTimeout(()=>{const dp=document.querySelector('.dp');if(dp)dp.classList.add('mo');},50);
+  }
+}
 function detailPanelHTML(){
   const t=tasks.find(x=>x.id===selectedTask);if(!t)return'';
   const isMyTask=cu.id===t.assignedTo;
@@ -556,7 +563,7 @@ function detailPanelHTML(){
   return`<div class="dp">
     <div class="dp-top">
       <div style="font-size:14px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
-      <button class="ic-btn" onclick="selectedTask=null;render()" style="width:26px;height:26px;flex-shrink:0">✕</button>
+      <button class="ic-btn" onclick="selectedTask=null;render()" style="width:32px;height:32px;flex-shrink:0;font-size:16px;touch-action:manipulation">✕</button>
     </div>
     <div class="dp-body">
       <div class="dp-sec"><div class="dp-lbl">Status</div>${badge(t.status)}</div>
