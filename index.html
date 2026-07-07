@@ -547,11 +547,91 @@ function taskItemHTML(t){
 
 // ══ DETAIL PANEL ══
 function openDP(id){
-  selectedTask=id;render();
-  // On mobile, add .mo class to show detail panel
+  selectedTask=id;
   if(window.innerWidth<=768){
-    setTimeout(()=>{const dp=document.querySelector('.dp');if(dp)dp.classList.add('mo');},50);
+    // Mobile: show as full modal
+    renderMobileDetail(id);
+  } else {
+    render();
   }
+}
+
+function renderMobileDetail(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  // Remove existing mobile detail if any
+  const old=document.getElementById('mobile-detail');if(old)old.remove();
+  const div=document.createElement('div');
+  div.id='mobile-detail';
+  div.style.cssText='position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;animation:fadeUp .2s ease';
+  div.innerHTML=`
+    <div style="padding:14px 16px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;gap:10px;background:var(--sur);position:sticky;top:0;z-index:1">
+      <button onclick="closeMobileDetail()" style="background:none;border:none;color:var(--tx);font-size:20px;cursor:pointer;padding:4px 8px;touch-action:manipulation">←</button>
+      <div style="font-size:15px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
+    </div>
+    <div style="padding:16px">
+      ${mobileDetailBody(t)}
+    </div>
+    <div style="padding:14px 16px;border-top:.5px solid var(--sep);display:flex;flex-direction:column;gap:8px;background:var(--sur)">
+      ${mobileDetailFooter(t)}
+    </div>`;
+  document.body.appendChild(div);
+}
+
+function closeMobileDetail(){
+  selectedTask=null;
+  const old=document.getElementById('mobile-detail');if(old)old.remove();
+}
+
+function mobileDetailBody(t){
+  const links=t.links||[];
+  const corrFiles=t.corrFiles||[];
+  const subFiles=t.subFiles&&t.subFiles.length?t.subFiles:(t.subUrl?[{url:t.subUrl,name:t.subName}]:[]);
+  return`
+    <div style="margin-bottom:14px"><div class="dp-lbl">STATUS</div>${badge(t.status)}</div>
+    <div style="margin-bottom:14px"><div class="dp-lbl">MONTAJER</div><div style="display:flex;align-items:center;gap:8px;margin-top:4px">${avatarHTML(t.assignedTo,28)}<span style="font-size:14px;font-weight:500">${esc(uName(t.assignedTo))}</span></div></div>
+    <div style="margin-bottom:14px"><div class="dp-lbl">PROYEKT</div><span class="proj-tag"><span class="pdot" style="background:${pColor(t.projectId)};width:8px;height:8px"></span>${esc(pName(t.projectId))}</span></div>
+    ${t.deadline?`<div style="margin-bottom:14px"><div class="dp-lbl">DEADLINE</div>${dlBadge(t.deadline)}</div>`:''}
+    ${t.scenario?`<div style="margin-bottom:14px"><div class="dp-lbl">SSENARIY</div><div style="font-size:14px;line-height:1.6">${esc(t.scenario)}</div></div>`:''}
+    ${links.length?`<div style="margin-bottom:14px"><div class="dp-lbl">HAVOLALAR</div>${links.map(l=>`<div style="margin-top:6px"><a href="${esc(l)}" target="_blank" style="color:var(--bl);font-size:13px;word-break:break-all">🔗 ${esc(l)}</a></div>`).join('')}</div>`:''}
+    ${t.matUrl?`<div style="margin-bottom:14px"><div class="dp-lbl">MATERIAL</div>${mediaHTML(t.matUrl,t.matName)}</div>`:''}
+    ${t.corrections?`<div style="margin-bottom:14px">
+      <div class="dp-lbl" style="color:var(--or)">PRAVKALAR</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:5px;display:flex;align-items:center;gap:5px">${avatarHTML(t.corrChecker||'',16)} ${esc(uName(t.corrChecker))} tomonidan</div>
+      <div style="font-size:14px;background:var(--ord);border-radius:8px;padding:10px 12px;line-height:1.6">${esc(t.corrections)}</div>
+      ${corrFiles.map(f=>isVid(f.name)?`<video controls src="${esc(f.url)}" style="width:100%;margin-top:8px;border-radius:8px"></video>`:isAud(f.name)?`<audio controls src="${esc(f.url)}" style="width:100%;margin-top:8px"></audio>`:`<img src="${esc(f.url)}" style="max-width:100%;border-radius:8px;margin-top:8px"/>`).join('')}
+    </div>`:''}
+    ${subFiles.length?`<div style="margin-bottom:14px"><div class="dp-lbl" style="color:var(--gr)">YUBORILGAN ISH</div>${subFiles.map(f=>mediaHTML(f.url,f.name)).join('')}</div>`:''}
+  `;
+}
+
+function mobileDetailFooter(t){
+  const isMyTask=cu.id===t.assignedTo;
+  const isChecker=cu.role==='checker'||cu.role==='admin';
+  let btns='';
+  if(isChecker&&t.status==='submitted'){
+    btns+=`<button class="btn btn-gr btn-full" onclick="approveT('${t.id}');closeMobileDetail()">✓ Tasdiqlash</button>`;
+    btns+=`<button class="btn btn-or btn-full" onclick="closeMobileDetail();setTimeout(()=>openCorrect('${t.id}'),100)">✎ Pravka qo'shish</button>`;
+  }
+  if(isChecker&&t.status==='corrections'){
+    btns+=`<button class="btn btn-or btn-full" onclick="closeMobileDetail();setTimeout(()=>openCorrect('${t.id}'),100)">+ Yana pravka</button>`;
+  }
+  if(isMyTask&&t.status==='new'){
+    btns+=`<button class="btn btn-pr btn-full" onclick="doStart('${t.id}');closeMobileDetail()">▶ Boshlash</button>`;
+  }
+  if(isMyTask&&(t.status==='in_progress'||t.status==='corrections')){
+    btns+=`<button class="btn btn-gr btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),100)">↑ ${t.status==='corrections'?'To'g'irlab yuborish':'Tekshirishga yuborish'}</button>`;
+  }
+  if(isMyTask&&(t.status==='submitted'||t.status==='approved')){
+    btns+=`<button class="btn btn-gh btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),100)">↺ Faylni almashtirish</button>`;
+  }
+  if(isChecker){
+    btns+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+      ${Object.entries(ST).map(([k,v])=>k!==t.status?`<button class="btn btn-gh btn-xs" onclick="setTaskStatus('${t.id}','${k}')" style="touch-action:manipulation">${v.l}</button>`:'').join('')}
+    </div>`;
+    btns+=`<button class="btn btn-gh btn-full" onclick="closeMobileDetail();setTimeout(()=>openEditTask('${t.id}'),100)">✎ Tahrirlash</button>`;
+    btns+=`<button class="btn btn-rd btn-full" onclick="if(confirm('O\'chirishni tasdiqlaysizmi?')){delT('${t.id}');closeMobileDetail();}">✕ O'chirish</button>`;
+  }
+  return btns;
 }
 function detailPanelHTML(){
   const t=tasks.find(x=>x.id===selectedTask);if(!t)return'';
@@ -795,8 +875,8 @@ async function saveCorrect(id){
 }
 
 // ══ TASK ACTIONS ══
-async function approveT(id){const t=tasks.find(x=>x.id===id);if(t){t.status='approved';}await cloudSave();showNotice('Video tasdiqlandi ✓');}
-async function doStart(id){const t=tasks.find(x=>x.id===id);if(t)t.status='in_progress';await cloudSave();render();}
+async function approveT(id){const t=tasks.find(x=>x.id===id);if(t){t.status='approved';}await cloudSave();showNotice('Video tasdiqlandi ✓');if(window.innerWidth>768)render();}
+async function doStart(id){const t=tasks.find(x=>x.id===id);if(t)t.status='in_progress';await cloudSave();if(window.innerWidth>768)render();}
 async function delT(id){
   if(!confirm('Bu topshiriqni o\'chirishni tasdiqlaysizmi?'))return;
   const t=tasks.find(x=>x.id===id);
