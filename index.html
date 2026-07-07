@@ -715,7 +715,7 @@ function mobileDetailFooter(t){
     btns+=`<button class="btn btn-pr btn-full" onclick="doStart('${t.id}');closeMobileDetail()">▶ Boshlash</button>`;
   }
   if(isMyTask&&(t.status==='in_progress'||t.status==='corrections')){
-    btns+=`<button class="btn btn-gr btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),100)">↑ ${t.status==='corrections'?'To'g'irlab yuborish':'Tekshirishga yuborish'}</button>`;
+    btns+=`<button class="btn btn-gr btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),100)">↑ ${t.status==='corrections'?"To\'g\'irlab yuborish":"Tekshirishga yuborish"}</button>`;
   }
   if(isMyTask&&(t.status==='submitted'||t.status==='approved')){
     btns+=`<button class="btn btn-gh btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),100)">↺ Faylni almashtirish</button>`;
