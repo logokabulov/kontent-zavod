@@ -558,25 +558,67 @@ function openDP(id){
 
 function renderMobileDetail(id){
   const t=tasks.find(x=>x.id===id);if(!t)return;
-  // Remove existing mobile detail if any
   const old=document.getElementById('mobile-detail');if(old)old.remove();
+  const links=t.links||[];
+  const corrFiles=t.corrFiles||[];
+  const subFiles=t.subFiles&&t.subFiles.length?t.subFiles:(t.subUrl?[{url:t.subUrl,name:t.subName}]:[]);
+  const isMyTask=cu&&cu.id===t.assignedTo;
+  const isChecker=cu&&(cu.role==='checker'||cu.role==='admin');
+  
+  // Build footer buttons
+  let btns='';
+  if(isChecker&&t.status==='submitted'){
+    btns+=`<button class="btn btn-gr btn-full" onclick="approveT('${t.id}');closeMobileDetail()">✓ Tasdiqlash</button>`;
+    btns+=`<button class="btn btn-or btn-full" onclick="closeMobileDetail();setTimeout(()=>openCorrect('${t.id}'),150)">✎ Pravka qo'shish</button>`;
+  }
+  if(isChecker&&t.status==='corrections'){
+    btns+=`<button class="btn btn-or btn-full" onclick="closeMobileDetail();setTimeout(()=>openCorrect('${t.id}'),150)">+ Yana pravka</button>`;
+  }
+  if(isMyTask&&t.status==='new'){
+    btns+=`<button class="btn btn-pr btn-full" onclick="doStart('${t.id}');closeMobileDetail()">▶ Boshlash</button>`;
+  }
+  if(isMyTask&&(t.status==='in_progress'||t.status==='corrections')){
+    btns+=`<button class="btn btn-gr btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),150)">↑ ${t.status==='corrections'?"To'g'irlab yuborish":"Tekshirishga yuborish"}</button>`;
+  }
+  if(isMyTask&&(t.status==='submitted'||t.status==='approved')){
+    btns+=`<button class="btn btn-gh btn-full" onclick="closeMobileDetail();setTimeout(()=>openSubmit('${t.id}'),150)">↺ Faylni almashtirish</button>`;
+  }
+  if(isChecker){
+    const statusBtns=Object.entries(ST).map(([k,v])=>k!==t.status?`<button class="btn btn-gh btn-xs" onclick="setTaskStatus('${t.id}','${k}')" style="touch-action:manipulation">${v.l}</button>`:'').join('');
+    btns+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${statusBtns}</div>`;
+    btns+=`<button class="btn btn-gh btn-full" onclick="closeMobileDetail();setTimeout(()=>openEditTask('${t.id}'),150)">✎ Tahrirlash</button>`;
+    btns+=`<button class="btn btn-rd btn-full" onclick="if(confirm('O\'chirishni tasdiqlaysizmi?')){delT('${t.id}');closeMobileDetail();}">✕ O'chirish</button>`;
+  }
+
   const div=document.createElement('div');
   div.id='mobile-detail';
-  div.style.cssText='position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;animation:fadeUp .2s ease';
+  div.setAttribute('style','position:fixed;inset:0;z-index:600;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch');
   div.innerHTML=`
-    <div style="padding:14px 16px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;gap:10px;background:var(--sur);position:sticky;top:0;z-index:1">
-      <button onclick="closeMobileDetail()" style="background:none;border:none;color:var(--tx);font-size:20px;cursor:pointer;padding:4px 8px;touch-action:manipulation">←</button>
+    <div style="padding:12px 16px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;gap:10px;background:var(--sur);position:sticky;top:0;z-index:1">
+      <button onclick="closeMobileDetail()" style="background:none;border:none;color:var(--tx);font-size:22px;cursor:pointer;padding:4px 10px;touch-action:manipulation;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center">←</button>
       <div style="font-size:15px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
     </div>
-    <div style="padding:16px">
-      ${mobileDetailBody(t)}
+    <div style="padding:16px;padding-bottom:0">
+      <div style="margin-bottom:14px">${badge(t.status)}</div>
+      <div style="margin-bottom:14px"><div class="dp-lbl">MONTAJER</div><div style="display:flex;align-items:center;gap:8px;margin-top:6px">${avatarHTML(t.assignedTo,32)}<span style="font-size:15px;font-weight:600">${esc(uName(t.assignedTo))}</span></div></div>
+      <div style="margin-bottom:14px"><div class="dp-lbl">PROYEKT</div><span class="proj-tag" style="margin-top:6px;display:inline-flex"><span class="pdot" style="background:${pColor(t.projectId)};width:8px;height:8px"></span>${esc(pName(t.projectId))}</span></div>
+      ${t.deadline?`<div style="margin-bottom:14px"><div class="dp-lbl">DEADLINE</div><div style="margin-top:6px">${dlBadge(t.deadline)}</div></div>`:''}
+      ${t.scenario?`<div style="margin-bottom:14px"><div class="dp-lbl">SSENARIY</div><div style="font-size:14px;line-height:1.6;margin-top:6px">${esc(t.scenario)}</div></div>`:''}
+      ${links.length?`<div style="margin-bottom:14px"><div class="dp-lbl">HAVOLALAR</div>${links.map(l=>`<div style="margin-top:6px"><a href="${esc(l)}" target="_blank" style="color:var(--bl);font-size:13px;word-break:break-all">🔗 ${esc(l)}</a></div>`).join('')}</div>`:''}
+      ${t.matUrl?`<div style="margin-bottom:14px"><div class="dp-lbl">MATERIAL</div><div style="margin-top:6px">${mediaHTML(t.matUrl,t.matName)}</div></div>`:''}
+      ${t.corrections?`<div style="margin-bottom:14px">
+        <div class="dp-lbl" style="color:var(--or)">PRAVKALAR</div>
+        <div style="font-size:12px;color:var(--tx2);margin:6px 0 5px;display:flex;align-items:center;gap:5px">${avatarHTML(t.corrChecker||'',18)} ${esc(uName(t.corrChecker))} tomonidan</div>
+        <div style="font-size:14px;background:var(--ord);border-radius:10px;padding:12px;line-height:1.6">${esc(t.corrections)}</div>
+        ${corrFiles.map(f=>isVid(f.name)?`<video controls src="${esc(f.url)}" style="width:100%;margin-top:8px;border-radius:8px;max-height:240px"></video>`:isAud(f.name)?`<audio controls src="${esc(f.url)}" style="width:100%;margin-top:8px"></audio>`:`<img src="${esc(f.url)}" style="max-width:100%;border-radius:8px;margin-top:8px;cursor:pointer" onclick="window.open('${esc(f.url)}')"/>`).join('')}
+      </div>`:''}
+      ${subFiles.length?`<div style="margin-bottom:14px"><div class="dp-lbl" style="color:var(--gr)">YUBORILGAN ISH</div><div style="margin-top:6px">${subFiles.map(f=>mediaHTML(f.url,f.name)).join('')}</div></div>`:''}
     </div>
-    <div style="padding:14px 16px;border-top:.5px solid var(--sep);display:flex;flex-direction:column;gap:8px;background:var(--sur)">
-      ${mobileDetailFooter(t)}
-    </div>`;
+    ${btns?`<div style="padding:16px;display:flex;flex-direction:column;gap:8px">${btns}</div>`:''}
+    <div style="height:32px"></div>
+  `;
   document.body.appendChild(div);
 }
-
 function closeMobileDetail(){
   selectedTask=null;
   const old=document.getElementById('mobile-detail');if(old)old.remove();
@@ -1136,7 +1178,11 @@ async function init(){
     await cloudLoad();
     const nT=JSON.stringify(tasks),nU=JSON.stringify(users.map(u=>u.id+u.name+u.role));
     if(pT!==nT||pU!==nU){
-      if(cu&&!modalFn){const f=users.find(u=>u.id===cu.id);if(f)cu=f;render();}
+      if(cu&&!modalFn){
+        const f=users.find(u=>u.id===cu.id);if(f)cu=f;
+        // Don't re-render if mobile detail is open
+        if(!document.getElementById('mobile-detail'))render();
+      }
     }else{const dot=document.querySelector('.sdot');if(dot)dot.className='sdot s-ok';}
   },5000);
 }
